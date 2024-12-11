@@ -1,0 +1,38 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    overflow: hidden;
+}
+
+body {
+    margin: 0;
+    overflow: hidden; /* Убираем полосы прокрутки */
+    background-color: black;
+    color: white;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+}
+.banana {
+    position: absolute;
+    font-size: 24px;
+    animation: fall linear infinite;
+    filter: brightness(1);
+    max-width: 100vw;
+    overflow: hidden;
+    white-space: nowrap;
+    user-select: none;
+}
+@keyframes fall {
+    0% {
+        transform: translateY(-10%) translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) translateX(var(--sway));
+        opacity: 0.8;
+    }
+}
