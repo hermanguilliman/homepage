@@ -1,0 +1,18 @@
+
+{
+  "short_name": "Guilliman",
+  "name": "Guilliman",
+  "icons": [
+    {
+      "src": "/icon_512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#000000",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#000000",
+  "prefer_related_applications": false
+}
