@@ -4,7 +4,7 @@
   "name": "Guilliman",
   "icons": [
     {
-      "src": "/icon_512.png",
+      "src": "512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
