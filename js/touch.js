@@ -1,1 +1,3 @@
-document.body.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+document.body.addEventListener("touchmove", (e) => e.preventDefault(), {
+  passive: false,
+});
