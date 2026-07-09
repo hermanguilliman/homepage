@@ -341,6 +341,16 @@ void (function () {
     init();
 
     output.addEventListener("click", function (e) {
+        var card = e.target.closest(".mobile-card");
+        if (card) {
+            var firstCard = output.querySelector(".mobile-card");
+            if (card === firstCard) {
+                e.preventDefault();
+                triggerScreensaver();
+            }
+            return;
+        }
+
         var link = e.target.closest(".svc-link");
         if (link) {
             e.preventDefault();
@@ -357,7 +367,7 @@ void (function () {
         if (!document.body.classList.contains("saver-mode")) return;
         document.body.classList.remove("saver-mode");
         if (typeof setEmojiSpawnRate === "function") {
-            setEmojiSpawnRate(300);
+            setEmojiSpawnRate(isMobile ? 500 : 300);
         }
         var el = document.querySelectorAll("#screen > .emoji");
         for (var i = 0; i < el.length; i++) el[i].remove();
