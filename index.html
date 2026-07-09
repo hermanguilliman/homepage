@@ -1,42 +1,35 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
+<head>
     <meta charset="UTF-8" />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="img/favicon-16x16.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href="img/favicon-32x32.png"
-    />
-    <link
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href="img/apple-touch-icon.png"
-    />
+    <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png" />
     <link rel="icon" sizes="192x192" href="img/android-chrome-192x192.png" />
     <link rel="icon" sizes="512x512" href="img/android-chrome-512x512.png" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="shortcut icon" href="img/favicon.png" type="image/x-icon" />
     <meta name="theme-color" content="#000000" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
     <meta property="og:title" content="Guilliman" />
     <meta property="og:description" content="Береги голову!" />
     <meta property="og:image" content="https://guilliman.ru/img/banana.png" />
     <meta property="og:url" content="https://guilliman.ru" />
     <meta property="og:type" content="website" />
-    <title>Guilliman</title>
+    <title>guilliman.ru — root terminal</title>
     <link rel="stylesheet" href="css/style.css" />
-  </head>
-  <body>
+</head>
+<body>
+    <div id="bezel">
+        <div id="screen">
+            <div id="scanlines"></div>
+            <div id="vignette"></div>
+            <div id="terminal">
+                <div id="output"></div>
+            </div>
+        </div>
+    </div>
     <script src="js/emojifall.js"></script>
-  </body>
+    <script src="js/terminal.js"></script>
+</body>
 </html>

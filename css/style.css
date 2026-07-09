@@ -4,43 +4,292 @@
     box-sizing: border-box;
 }
 
-html {
+html, body {
+    width: 100%;
+    height: 100%;
     overflow: hidden;
+    background: #000;
 }
 
 body {
-    margin: 0;
-    overflow: hidden;
-
-    background-color: black;
-    color: white;
-    font-family: Arial, sans-serif;
-    overflow: hidden;
+    font-family: 'Courier New', Courier, 'Lucida Console', monospace;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
+/* CRT Monitor bezel */
+#bezel {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+    background: #0d0d0d;
+}
+
+/* Screen */
+#screen {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: #080808;
+    overflow: hidden;
+    border-radius: 28px;
+    box-shadow:
+        inset 0 0 0 3px #1c1c1c,
+        inset 0 0 80px rgba(0, 0, 0, 0.75);
+}
+
+/* Scanlines overlay */
+#scanlines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.18) 0px,
+        rgba(0, 0, 0, 0.18) 1px,
+        transparent 1px,
+        transparent 3px
+    );
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* Vignette — screen curvature simulation (bright center, dark edges) */
+#vignette {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+        ellipse at center,
+        transparent 25%,
+        rgba(0, 0, 0, 0.25) 55%,
+        rgba(0, 0, 0, 0.85) 100%
+    );
+    pointer-events: none;
+    z-index: 11;
+    border-radius: inherit;
+}
+
+/* Subtle green phosphor glow overlay */
+#screen::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(18, 255, 18, 0.015);
+    pointer-events: none;
+    z-index: 12;
+    animation: flicker 0.15s infinite;
+}
+
+/* Flicker effect */
+@keyframes flicker {
+    0%   { opacity: 1.00; }
+    10%  { opacity: 0.97; }
+    20%  { opacity: 0.99; }
+    30%  { opacity: 0.96; }
+    40%  { opacity: 1.00; }
+    50%  { opacity: 0.97; }
+    60%  { opacity: 0.98; }
+    70%  { opacity: 0.99; }
+    80%  { opacity: 0.97; }
+    90%  { opacity: 0.98; }
+    100% { opacity: 1.00; }
+}
+
+/* Power-on animation — horizontal collapse expand */
+@keyframes powerOn {
+    0% {
+        opacity: 0;
+        filter: brightness(30) saturate(0);
+        transform: scaleY(0.003);
+    }
+    25% {
+        opacity: 1;
+        filter: brightness(8) saturate(0.2);
+        transform: scaleY(0.003);
+    }
+    50% {
+        filter: brightness(3) saturate(0.5);
+        transform: scaleY(1);
+    }
+    75% {
+        filter: brightness(1.5) saturate(0.8);
+    }
+    100% {
+        opacity: 1;
+        filter: brightness(1) saturate(1);
+        transform: scaleY(1);
+    }
+}
+
+#screen {
+    animation: powerOn 0.4s ease-out forwards;
+}
+
+/* Terminal content area */
+#terminal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 5% 8%;
+    z-index: 5;
+    color: #33ff33;
+    font-size: 17px;
+    line-height: 1.55;
+    text-shadow:
+        0 0 6px rgba(51, 255, 51, 0.35),
+        -0.4px 0 0 rgba(255, 0, 0, 0.12),
+        0.4px 0 0 rgba(0, 0, 255, 0.12);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Custom scrollbar */
+#terminal::-webkit-scrollbar {
+    width: 6px;
+}
+#terminal::-webkit-scrollbar-track {
+    background: rgba(51, 255, 51, 0.03);
+}
+#terminal::-webkit-scrollbar-thumb {
+    background: rgba(51, 255, 51, 0.15);
+    border-radius: 3px;
+}
+
+#output {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* OK badge in boot sequence */
+.ok {
+    color: #33ff33;
+    font-weight: bold;
+    text-shadow: 0 0 12px rgba(51, 255, 51, 0.6);
+}
+
+/* Blinking cursor */
+.cursor {
+    animation: blink 1s step-end infinite;
+    color: #33ff33;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* Menu link style */
+.svc-link {
+    color: #66ff66;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(51, 255, 51, 0.25);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.svc-link:hover {
+    text-shadow: 0 0 15px rgba(51, 255, 51, 0.7);
+    border-bottom-color: #33ff33;
+}
+
+/* TV-off animation — screensaver trigger */
+@keyframes terminal-off {
+    0% {
+        transform: scaleY(1);
+        filter: brightness(1);
+    }
+    12% {
+        filter: brightness(6);
+    }
+    35% {
+        transform: scaleY(0.002);
+        filter: brightness(3);
+    }
+    100% {
+        transform: scaleY(0.002);
+        filter: brightness(0);
+        opacity: 0;
+    }
+}
+
+/* Screensaver mode */
+body.saver-mode #bezel {
+    background: #000;
+    transition: background 0.3s;
+}
+body.saver-mode #screen {
+    background: #000;
+    border-radius: 0;
+    box-shadow: none;
+}
+body.saver-mode #terminal {
+    animation: terminal-off 0.4s ease-in forwards;
+    transform-origin: center center;
+}
+body.saver-mode #scanlines,
+body.saver-mode #vignette,
+body.saver-mode #screen::after {
+    opacity: 0 !important;
+    transition: opacity 0.2s ease;
+}
+body.saver-mode .emoji {
+    opacity: 0.85 !important;
+    filter: brightness(1.6) drop-shadow(0 0 6px rgba(51, 255, 51, 0.15)) !important;
+}
+
+/* Falling emoji — background layer */
 .emoji {
     position: absolute;
     font-size: 24px;
     animation: fall linear infinite;
-    filter: brightness(1);
     max-width: 100vw;
     overflow: hidden;
     white-space: nowrap;
     user-select: none;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.35;
 }
 
 @keyframes fall {
     0% {
         transform: translateY(-10%) translateX(0);
-        opacity: 1;
+        opacity: 0.35;
     }
-
-    90% {
-        opacity: 1;
+    85% {
+        opacity: 0.2;
     }
-
     100% {
         transform: translateY(100vh) translateX(var(--sway));
         opacity: 0;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #terminal {
+        padding: 18px 16px;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+}
+
+@media (max-width: 480px) {
+    #terminal {
+        padding: 12px 10px;
+        font-size: 12px;
+        line-height: 1.4;
     }
 }
