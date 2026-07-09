@@ -1,28 +1,58 @@
-void function () {
-    const output = document.getElementById('output');
+void (function () {
+    const output = document.getElementById("output");
 
     const SERVICES = [
-        { name: 'guilliman.ru',       desc: 'портал / корневой хаб',                  url: 'https://guilliman.ru' },
-        { name: 'blog.guilliman.ru',  desc: 'статический блог',                       url: 'https://blog.guilliman.ru' },
-        { name: 'input.guilliman.ru', desc: 'тестирование ввода (мышь, клавиатура, геймпад)', url: 'https://input.guilliman.ru' },
-        { name: 'tartan.guilliman.ru',desc: 'генерация тартана',                      url: 'https://tartan.guilliman.ru' },
-        { name: 'stl.guilliman.ru',   desc: 'просмотр STL моделей',                   url: 'https://stl.guilliman.ru' },
-        { name: 'password.guilliman.ru',desc: 'генератор паролей',                    url: 'https://password.guilliman.ru' },
-        { name: 'md.guilliman.ru',    desc: 'HTML → Markdown конвертер',              url: 'https://md.guilliman.ru' },
+        {
+            name: "guilliman.ru",
+            desc: "портал / корневой хаб",
+            url: "https://guilliman.ru",
+        },
+        {
+            name: "blog.guilliman.ru",
+            desc: "блог полезных записей",
+            url: "https://blog.guilliman.ru",
+        },
+        {
+            name: "input.guilliman.ru",
+            desc: "тестирование ввода (мышь, клавиатура, геймпад)",
+            url: "https://input.guilliman.ru",
+        },
+        {
+            name: "tartan.guilliman.ru",
+            desc: "генерация тартана",
+            url: "https://tartan.guilliman.ru",
+        },
+        {
+            name: "stl.guilliman.ru",
+            desc: "просмотр STL моделей",
+            url: "https://stl.guilliman.ru",
+        },
+        {
+            name: "password.guilliman.ru",
+            desc: "генератор паролей",
+            url: "https://password.guilliman.ru",
+        },
+        {
+            name: "md.guilliman.ru",
+            desc: "HTML → Markdown конвертер",
+            url: "https://md.guilliman.ru",
+        },
     ];
 
     const CONNECT_LINES = [
-        'Подключение к guilliman.ru...',
-        'Создание защищенного канала...',
-        'Соединение установлено.',
+        "Подключение к guilliman.ru...",
+        "Создание защищенного канала...",
+        "Соединение установлено.",
     ];
 
     function sleep(ms) {
-        return new Promise(function (r) { setTimeout(r, ms); });
+        return new Promise(function (r) {
+            setTimeout(r, ms);
+        });
     }
 
-    var buffer = '';
-    var tagline = 'Береги голову!';
+    var buffer = "";
+    var tagline = "Береги голову!";
     var TYPE_SPEED = 0.05;
 
     function write(text) {
@@ -32,7 +62,7 @@ void function () {
     }
 
     function writeln(text) {
-        write(text + '\n');
+        write(text + "\n");
     }
 
     async function typewrite(text, speed) {
@@ -51,13 +81,13 @@ void function () {
             if (i < CONNECT_LINES.length - 1) {
                 await typewrite(line, 6);
                 var spaces = 52 - line.length;
-                if (spaces > 0) write(' '.repeat(spaces));
+                if (spaces > 0) write(" ".repeat(spaces));
                 await sleep(60);
                 write('<span class="ok">[  \u2713  ]</span>\n');
                 await sleep(120);
             } else {
                 await typewrite(line, 8);
-                writeln('');
+                writeln("");
                 await sleep(150);
             }
         }
@@ -66,62 +96,69 @@ void function () {
 
     function centerText(text, width) {
         var p = Math.max(0, Math.floor((width - text.length) / 2));
-        return ' '.repeat(p) + text + ' '.repeat(Math.max(0, width - p - text.length));
+        return (
+            " ".repeat(p) +
+            text +
+            " ".repeat(Math.max(0, width - p - text.length))
+        );
     }
 
     async function showHeader() {
         var W = 44;
-        var H = '\u2550';
-        var V = '\u2551';
+        var H = "\u2550";
+        var V = "\u2551";
 
-        writeln('');
-        write('  ');
-        await typewrite('\u2554' + H.repeat(W) + '\u2557', 2);
-        writeln('');
+        writeln("");
+        write("  ");
+        await typewrite("\u2554" + H.repeat(W) + "\u2557", 2);
+        writeln("");
 
         var headerLines = [
-            centerText('GUILLIMAN TERMINAL v3.1.4', W),
-            centerText('', W),
+            centerText("GUILLIMAN TERMINAL v3.1.4", W),
+            centerText("", W),
             centerText(tagline, W),
         ];
 
         for (var i = 0; i < headerLines.length; i++) {
-            write('  ' + V);
+            write("  " + V);
             await typewrite(headerLines[i], 4);
             writeln(V);
         }
 
-        write('  ');
-        await typewrite('\u255a' + H.repeat(W) + '\u255d', 2);
-        writeln('');
+        write("  ");
+        await typewrite("\u255a" + H.repeat(W) + "\u255d", 2);
+        writeln("");
     }
 
     async function showMenu() {
         await sleep(100);
-        writeln('');
-        write('  ');
-        await typewrite('\u2500'.repeat(48), 2);
-        writeln('');
-        writeln('');
+        writeln("");
+        write("  ");
+        await typewrite("\u2500".repeat(48), 2);
+        writeln("");
+        writeln("");
 
         for (var i = 0; i < SERVICES.length; i++) {
             var s = SERVICES[i];
             var num = i + 1;
-            var line = '   [' + num + ']  ' + s.name + '  \u2022  ' + s.desc;
-            write('  ');
+            var line = "   [" + num + "]  " + s.name + "  \u2022  " + s.desc;
+            write("  ");
             await typewrite(line, 5);
-            writeln('');
+            writeln("");
         }
 
-        writeln('');
-        write('  ');
-        await typewrite('\u2500'.repeat(48), 2);
-        writeln('');
-        writeln('');
+        writeln("");
+        write("  ");
+        await typewrite("\u2500".repeat(48), 2);
+        writeln("");
+        writeln("");
 
-        await typewrite('  \u041d\u0430\u0436\u043c\u0438 [1\u20137] \u0434\u043b\u044f \u043f\u0435\u0440\u0435\u0445\u043e\u0434\u0430', 8);
-        writeln('');
-        writeln('');
+        await typewrite(
+            "  \u041d\u0430\u0436\u043c\u0438 [1\u20137] \u0434\u043b\u044f \u043f\u0435\u0440\u0435\u0445\u043e\u0434\u0430",
+            8,
+        );
+        writeln("");
+        writeln("");
     }
 
     async function init() {
@@ -131,7 +168,7 @@ void function () {
         await showHeader();
         await showMenu();
 
-        await typewrite('root@guilliman:~$ ', 8);
+        await typewrite("root@guilliman:~$ ", 8);
         write('<span class="cursor">\u258A</span>');
         makeLinksClickable();
     }
@@ -139,17 +176,26 @@ void function () {
     function makeLinksClickable() {
         for (var i = 0; i < SERVICES.length; i++) {
             var s = SERVICES[i];
-            var searchStr = '[' + (i + 1) + ']  ' + s.name;
-            var linkHtml = '[' + (i + 1) + ']  <a class="svc-link" href="' + s.url + '" data-index="' + i + '">' + s.name + '</a>';
+            var searchStr = "[" + (i + 1) + "]  " + s.name;
+            var linkHtml =
+                "[" +
+                (i + 1) +
+                ']  <a class="svc-link" href="' +
+                s.url +
+                '" data-index="' +
+                i +
+                '">' +
+                s.name +
+                "</a>";
             buffer = buffer.replace(searchStr, linkHtml);
         }
         output.innerHTML = buffer;
     }
 
     function triggerScreensaver() {
-        if (document.body.classList.contains('saver-mode')) return;
-        document.body.classList.add('saver-mode');
-        if (typeof setEmojiSpawnRate === 'function') {
+        if (document.body.classList.contains("saver-mode")) return;
+        document.body.classList.add("saver-mode");
+        if (typeof setEmojiSpawnRate === "function") {
             setEmojiSpawnRate(80);
         }
         playCollapseSound();
@@ -173,7 +219,7 @@ void function () {
             noiseGain.gain.setValueAtTime(0.06, t);
             noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
             var hp = ctx.createBiquadFilter();
-            hp.type = 'highpass';
+            hp.type = "highpass";
             hp.frequency.value = 2000;
             noise.connect(hp);
             hp.connect(noiseGain);
@@ -183,7 +229,7 @@ void function () {
 
             // Low thump — sine, 80→25Hz
             var thump = ctx.createOscillator();
-            thump.type = 'sine';
+            thump.type = "sine";
             thump.frequency.setValueAtTime(80, t + 0.02);
             thump.frequency.exponentialRampToValueAtTime(25, t + 0.35);
             var thumpGain = ctx.createGain();
@@ -196,7 +242,7 @@ void function () {
 
             // Descending fizz — sawtooth, 1000→40Hz
             var fizz = ctx.createOscillator();
-            fizz.type = 'sawtooth';
+            fizz.type = "sawtooth";
             fizz.frequency.setValueAtTime(1000, t + 0.02);
             fizz.frequency.exponentialRampToValueAtTime(40, t + 0.3);
             var fizzGain = ctx.createGain();
@@ -216,7 +262,7 @@ void function () {
 
             // Low power thump — sine burst 80→40Hz
             var thump = ctx.createOscillator();
-            thump.type = 'sine';
+            thump.type = "sine";
             thump.frequency.setValueAtTime(80, t);
             thump.frequency.exponentialRampToValueAtTime(40, t + 0.15);
             var thumpGain = ctx.createGain();
@@ -230,7 +276,7 @@ void function () {
 
             // Deep mains hum — sine 50Hz, fades slowly
             var hum = ctx.createOscillator();
-            hum.type = 'sine';
+            hum.type = "sine";
             hum.frequency.setValueAtTime(50, t);
             var humGain = ctx.createGain();
             humGain.gain.setValueAtTime(0.001, t + 0.05);
@@ -246,7 +292,7 @@ void function () {
 
     async function loadTagline() {
         try {
-            var res = await fetch('/phrases.json');
+            var res = await fetch("/phrases.json");
             var phrases = await res.json();
             tagline = phrases[Math.floor(Math.random() * phrases.length)];
         } catch (_) {}
@@ -254,36 +300,36 @@ void function () {
 
     init();
 
-    output.addEventListener('click', function (e) {
-        var link = e.target.closest('.svc-link');
+    output.addEventListener("click", function (e) {
+        var link = e.target.closest(".svc-link");
         if (link) {
             e.preventDefault();
-            var idx = parseInt(link.getAttribute('data-index'), 10);
+            var idx = parseInt(link.getAttribute("data-index"), 10);
             if (idx === 0) {
                 triggerScreensaver();
             } else {
-                window.location.href = link.getAttribute('href');
+                window.location.href = link.getAttribute("href");
             }
         }
     });
 
     function exitScreensaver() {
-        if (!document.body.classList.contains('saver-mode')) return;
-        document.body.classList.remove('saver-mode');
-        if (typeof setEmojiSpawnRate === 'function') {
+        if (!document.body.classList.contains("saver-mode")) return;
+        document.body.classList.remove("saver-mode");
+        if (typeof setEmojiSpawnRate === "function") {
             setEmojiSpawnRate(300);
         }
-        var el = document.querySelectorAll('#screen > .emoji');
+        var el = document.querySelectorAll("#screen > .emoji");
         for (var i = 0; i < el.length; i++) el[i].remove();
-        var term = document.getElementById('terminal');
-        term.classList.remove('power-on');
+        var term = document.getElementById("terminal");
+        term.classList.remove("power-on");
         void term.offsetWidth;
-        term.classList.add('power-on');
+        term.classList.add("power-on");
         playPowerOnSound();
     }
 
-    document.addEventListener('keydown', function (e) {
-        if (document.body.classList.contains('saver-mode')) {
+    document.addEventListener("keydown", function (e) {
+        if (document.body.classList.contains("saver-mode")) {
             exitScreensaver();
             return;
         }
@@ -297,9 +343,12 @@ void function () {
         }
     });
 
-    document.addEventListener('click', function (e) {
-        if (document.body.classList.contains('saver-mode') && !e.target.closest('.svc-link')) {
+    document.addEventListener("click", function (e) {
+        if (
+            document.body.classList.contains("saver-mode") &&
+            !e.target.closest(".svc-link")
+        ) {
             exitScreensaver();
         }
     });
-}();
+})();
