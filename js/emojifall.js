@@ -1,7 +1,13 @@
 const emojis = ["🍌", "💩", "🤡", "🍆"];
-var emojiTimer = setInterval(createEmoji, 300);
+var isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+var MAX_EMOJIS = isMobile ? 15 : 50;
+var SPAWN_RATE = isMobile ? 500 : 300;
+var emojiTimer = setInterval(createEmoji, SPAWN_RATE);
 
 function createEmoji() {
+  var screen = document.getElementById('screen');
+  if (screen.childElementCount > MAX_EMOJIS) return;
+
   var emoji = document.createElement("div");
   emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
   emoji.className = "emoji";
@@ -20,7 +26,7 @@ function createEmoji() {
   var brightness = Math.random() * 0.5 + 0.5;
   emoji.style.filter = "brightness(" + brightness + ")";
 
-  document.getElementById('screen').appendChild(emoji);
+  screen.appendChild(emoji);
 
   emoji.addEventListener("animationend", function () {
     emoji.remove();

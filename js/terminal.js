@@ -39,6 +39,8 @@ void (function () {
         },
     ];
 
+    var isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
     const CONNECT_LINES = [
         "Подключение к guilliman.ru...",
         "Создание защищенного канала...",
@@ -164,6 +166,10 @@ void (function () {
     async function init() {
         await sleep(100);
         await loadTagline();
+        if (isMobile) {
+            renderMobileHub();
+            return;
+        }
         await connect();
         await showHeader();
         await showMenu();
@@ -190,6 +196,40 @@ void (function () {
             buffer = buffer.replace(searchStr, linkHtml);
         }
         output.innerHTML = buffer;
+    }
+
+    function escapeHtml(s) {
+        return s
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+    }
+
+    function renderMobileHub() {
+        var html = '<div class="mobile-hub">';
+        html += '<div class="mobile-header">';
+        html += '<div class="mobile-title">GUILLIMAN</div>';
+        html += '<div class="mobile-tagline">' + escapeHtml(tagline) + "</div>";
+        html += "</div>";
+        html += '<div class="mobile-services">';
+        for (var i = 0; i < SERVICES.length; i++) {
+            var s = SERVICES[i];
+            html +=
+                '<a href="' +
+                s.url +
+                '" class="mobile-card">' +
+                '<div class="mobile-card-name">' +
+                escapeHtml(s.name) +
+                "</div>" +
+                '<div class="mobile-card-desc">' +
+                escapeHtml(s.desc) +
+                "</div>" +
+                "</a>";
+        }
+        html += "</div>";
+        html += '<div class="mobile-footer">\u043d\u0430\u0436\u043c\u0438 \u0434\u043b\u044f \u043f\u0435\u0440\u0435\u0445\u043e\u0434\u0430</div>';
+        html += "</div>";
+        output.innerHTML = html;
     }
 
     function triggerScreensaver() {
