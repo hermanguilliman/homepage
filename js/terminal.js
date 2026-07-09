@@ -152,6 +152,97 @@ void function () {
         if (typeof setEmojiSpawnRate === 'function') {
             setEmojiSpawnRate(80);
         }
+        playCollapseSound();
+    }
+
+    function playCollapseSound() {
+        try {
+            var ctx = new (window.AudioContext || window.webkitAudioContext)();
+            var t = ctx.currentTime;
+
+            // Static crackle — filtered noise burst
+            var bufSize = ctx.sampleRate * 0.15;
+            var noiseBuf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+            var data = noiseBuf.getChannelData(0);
+            for (var i = 0; i < bufSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * (1 - i / bufSize);
+            }
+            var noise = ctx.createBufferSource();
+            noise.buffer = noiseBuf;
+            var noiseGain = ctx.createGain();
+            noiseGain.gain.setValueAtTime(0.06, t);
+            noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+            var hp = ctx.createBiquadFilter();
+            hp.type = 'highpass';
+            hp.frequency.value = 2000;
+            noise.connect(hp);
+            hp.connect(noiseGain);
+            noiseGain.connect(ctx.destination);
+            noise.start(t);
+            noise.stop(t + 0.15);
+
+            // Low thump — sine, 80→25Hz
+            var thump = ctx.createOscillator();
+            thump.type = 'sine';
+            thump.frequency.setValueAtTime(80, t + 0.02);
+            thump.frequency.exponentialRampToValueAtTime(25, t + 0.35);
+            var thumpGain = ctx.createGain();
+            thumpGain.gain.setValueAtTime(0.2, t + 0.02);
+            thumpGain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+            thump.connect(thumpGain);
+            thumpGain.connect(ctx.destination);
+            thump.start(t + 0.02);
+            thump.stop(t + 0.35);
+
+            // Descending fizz — sawtooth, 1000→40Hz
+            var fizz = ctx.createOscillator();
+            fizz.type = 'sawtooth';
+            fizz.frequency.setValueAtTime(1000, t + 0.02);
+            fizz.frequency.exponentialRampToValueAtTime(40, t + 0.3);
+            var fizzGain = ctx.createGain();
+            fizzGain.gain.setValueAtTime(0.08, t + 0.02);
+            fizzGain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+            fizz.connect(fizzGain);
+            fizzGain.connect(ctx.destination);
+            fizz.start(t + 0.02);
+            fizz.stop(t + 0.3);
+        } catch (_) {}
+    }
+
+    function playPowerOnSound() {
+        try {
+            var ctx = new (window.AudioContext || window.webkitAudioContext)();
+            var t = ctx.currentTime;
+
+            // Low hum — transformer startup, 50→100Hz sine
+            var hum = ctx.createOscillator();
+            hum.type = 'sine';
+            hum.frequency.setValueAtTime(50, t);
+            hum.frequency.exponentialRampToValueAtTime(100, t + 0.6);
+            var humGain = ctx.createGain();
+            humGain.gain.setValueAtTime(0.001, t);
+            humGain.gain.linearRampToValueAtTime(0.06, t + 0.15);
+            humGain.gain.linearRampToValueAtTime(0.04, t + 0.5);
+            humGain.gain.exponentialRampToValueAtTime(0.001, t + 1.0);
+            hum.connect(humGain);
+            humGain.connect(ctx.destination);
+            hum.start(t);
+            hum.stop(t + 1.0);
+
+            // Degaussing ping — short 1.2kHz burst
+            var ping = ctx.createOscillator();
+            ping.type = 'sine';
+            ping.frequency.setValueAtTime(1200, t + 0.1);
+            ping.frequency.exponentialRampToValueAtTime(900, t + 0.25);
+            var pingGain = ctx.createGain();
+            pingGain.gain.setValueAtTime(0.001, t + 0.1);
+            pingGain.gain.linearRampToValueAtTime(0.05, t + 0.12);
+            pingGain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+            ping.connect(pingGain);
+            pingGain.connect(ctx.destination);
+            ping.start(t + 0.1);
+            ping.stop(t + 0.35);
+        } catch (_) {}
     }
 
     async function loadTagline() {
@@ -177,9 +268,24 @@ void function () {
         }
     });
 
+    function exitScreensaver() {
+        if (!document.body.classList.contains('saver-mode')) return;
+        document.body.classList.remove('saver-mode');
+        if (typeof setEmojiSpawnRate === 'function') {
+            setEmojiSpawnRate(300);
+        }
+        var el = document.querySelectorAll('#screen > .emoji');
+        for (var i = 0; i < el.length; i++) el[i].remove();
+        var term = document.getElementById('terminal');
+        term.classList.remove('power-on');
+        void term.offsetWidth;
+        term.classList.add('power-on');
+        playPowerOnSound();
+    }
+
     document.addEventListener('keydown', function (e) {
         if (document.body.classList.contains('saver-mode')) {
-            location.reload();
+            exitScreensaver();
             return;
         }
         var num = parseInt(e.key, 10);
@@ -194,7 +300,7 @@ void function () {
 
     document.addEventListener('click', function (e) {
         if (document.body.classList.contains('saver-mode') && !e.target.closest('.svc-link')) {
-            location.reload();
+            exitScreensaver();
         }
     });
 }();
