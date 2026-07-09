@@ -464,13 +464,16 @@ body.saver-mode .emoji {
     #terminal {
         padding: 0;
         overflow: hidden;
-        transition: opacity 0.3s ease;
     }
 
     body.saver-mode #terminal {
-        animation: none;
-        opacity: 0;
+        animation: terminal-off 0.4s ease-in forwards;
         pointer-events: none;
+    }
+
+    body.saver-mode #terminal.power-on {
+        animation: terminal-on 1.2s ease-out forwards;
+        pointer-events: auto;
     }
 
     #output {

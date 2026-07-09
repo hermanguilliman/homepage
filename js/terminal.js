@@ -365,19 +365,17 @@ void (function () {
 
     function exitScreensaver() {
         if (!document.body.classList.contains("saver-mode")) return;
+        var term = document.getElementById("terminal");
         document.body.classList.remove("saver-mode");
         if (typeof setEmojiSpawnRate === "function") {
             setEmojiSpawnRate(isMobile ? 500 : 300);
         }
         var el = document.querySelectorAll("#screen > .emoji");
         for (var i = 0; i < el.length; i++) el[i].remove();
-        if (!isMobile) {
-            var term = document.getElementById("terminal");
-            term.classList.remove("power-on");
-            void term.offsetWidth;
-            term.classList.add("power-on");
-            playPowerOnSound();
-        }
+        term.classList.remove("power-on");
+        void term.offsetWidth;
+        term.classList.add("power-on");
+        playPowerOnSound();
     }
 
     document.addEventListener("keydown", function (e) {
