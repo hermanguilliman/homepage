@@ -214,34 +214,33 @@ void function () {
             var ctx = new (window.AudioContext || window.webkitAudioContext)();
             var t = ctx.currentTime;
 
-            // Low hum — transformer startup, 50→100Hz sine
+            // Low power thump — sine burst 80→40Hz
+            var thump = ctx.createOscillator();
+            thump.type = 'sine';
+            thump.frequency.setValueAtTime(80, t);
+            thump.frequency.exponentialRampToValueAtTime(40, t + 0.15);
+            var thumpGain = ctx.createGain();
+            thumpGain.gain.setValueAtTime(0.001, t);
+            thumpGain.gain.linearRampToValueAtTime(0.15, t + 0.02);
+            thumpGain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+            thump.connect(thumpGain);
+            thumpGain.connect(ctx.destination);
+            thump.start(t);
+            thump.stop(t + 0.25);
+
+            // Deep mains hum — sine 50Hz, fades slowly
             var hum = ctx.createOscillator();
             hum.type = 'sine';
             hum.frequency.setValueAtTime(50, t);
-            hum.frequency.exponentialRampToValueAtTime(100, t + 0.6);
             var humGain = ctx.createGain();
-            humGain.gain.setValueAtTime(0.001, t);
-            humGain.gain.linearRampToValueAtTime(0.06, t + 0.15);
-            humGain.gain.linearRampToValueAtTime(0.04, t + 0.5);
+            humGain.gain.setValueAtTime(0.001, t + 0.05);
+            humGain.gain.linearRampToValueAtTime(0.04, t + 0.2);
+            humGain.gain.linearRampToValueAtTime(0.02, t + 0.6);
             humGain.gain.exponentialRampToValueAtTime(0.001, t + 1.0);
             hum.connect(humGain);
             humGain.connect(ctx.destination);
-            hum.start(t);
+            hum.start(t + 0.05);
             hum.stop(t + 1.0);
-
-            // Degaussing ping — short 1.2kHz burst
-            var ping = ctx.createOscillator();
-            ping.type = 'sine';
-            ping.frequency.setValueAtTime(1200, t + 0.1);
-            ping.frequency.exponentialRampToValueAtTime(900, t + 0.25);
-            var pingGain = ctx.createGain();
-            pingGain.gain.setValueAtTime(0.001, t + 0.1);
-            pingGain.gain.linearRampToValueAtTime(0.05, t + 0.12);
-            pingGain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
-            ping.connect(pingGain);
-            pingGain.connect(ctx.destination);
-            ping.start(t + 0.1);
-            ping.stop(t + 0.35);
         } catch (_) {}
     }
 
