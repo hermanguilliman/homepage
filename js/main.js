@@ -48,7 +48,7 @@
   requestAnimationFrame(renderSpotlight);
 
   // 3D Card Tilt Effect
-  const cards = document.querySelectorAll(".tilt-card");
+  const cards = Array.from(document.querySelectorAll(".tilt-card"));
   cards.forEach(card => {
     card.addEventListener("mousemove", (e) => {
       const rect = card.getBoundingClientRect();
@@ -135,7 +135,28 @@
     draw();
   }
 
-  // Keyboard Shortcuts (1-9)
+  // 2D Grid Keyboard Navigation & Shortcuts
+  let currentFocusIndex = -1;
+
+  function getColumnsCount() {
+    const w = window.innerWidth;
+    if (w > 860) return 3;
+    if (w > 560) return 2;
+    return 1;
+  }
+
+  function focusCard(index) {
+    if (!cards.length) return;
+    currentFocusIndex = (index + cards.length) % cards.length;
+    cards[currentFocusIndex].focus();
+  }
+
+  cards.forEach((card, idx) => {
+    card.addEventListener("focus", () => {
+      currentFocusIndex = idx;
+    });
+  });
+
   const BY_NUMBER = [
     "https://blog.guilliman.ru",
     "https://soma.guilliman.ru",
@@ -151,6 +172,7 @@
   document.addEventListener("keydown", (e) => {
     if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
     const key = e.key;
+
     if (/^[1-9]$/.test(key)) {
       const idx = Number(key) - 1;
       const url = BY_NUMBER[idx];
@@ -158,6 +180,22 @@
         e.preventDefault();
         window.open(url, "_blank", "noopener,noreferrer");
       }
+      return;
+    }
+
+    const cols = getColumnsCount();
+    if (key === "ArrowRight") {
+      e.preventDefault();
+      focusCard(currentFocusIndex < 0 ? 0 : currentFocusIndex + 1);
+    } else if (key === "ArrowLeft") {
+      e.preventDefault();
+      focusCard(currentFocusIndex < 0 ? 0 : currentFocusIndex - 1);
+    } else if (key === "ArrowDown") {
+      e.preventDefault();
+      focusCard(currentFocusIndex < 0 ? 0 : currentFocusIndex + cols);
+    } else if (key === "ArrowUp") {
+      e.preventDefault();
+      focusCard(currentFocusIndex < 0 ? 0 : currentFocusIndex - cols);
     }
   });
 })();
