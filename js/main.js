@@ -1,170 +1,162 @@
 (() => {
   "use strict";
 
-  const items = Array.from(document.querySelectorAll(".item"));
-  if (!items.length) return;
+  // Year & Time
+  const yearEl = document.getElementById("year");
+  if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
-  const year = document.getElementById("year");
-  if (year) year.textContent = String(new Date().getFullYear());
-
-  let current = -1;
-  const focusAt = (index) => {
-    current = (index + items.length) % items.length;
-    items[current].focus();
-  };
-
-  const launch = (index) => {
-    const item = items[index];
-    if (item) window.open(item.href, "_blank", "noopener,noreferrer");
-  };
-
-  // Физические клавиши: сочетания работают независимо от раскладки.
-  const BY_CODE = {
-    KeyB: 0,
-    KeyM: 1,
-    KeyI: 2,
-    KeyT: 3,
-    KeyW: 4,
-    KeyS: 5,
-    KeyP: 6,
-    KeyK: 7
-  };
-
-  const toast = document.getElementById("toast");
-  let toastHide = null;
-  let toastClear = null;
-
-  // Плашка позиционируется fixed и лежит вне потока документа,
-  // поэтому копирайт не подменяется, а вёрстка не сдвигается.
-  function flash(message, isSuccess = true) {
-    if (!toast) return;
-    window.clearTimeout(toastHide);
-    window.clearTimeout(toastClear);
-
-    toast.textContent = message;
-    toast.classList.toggle("ok", isSuccess);
-    toast.classList.toggle("err", !isSuccess);
-    toast.classList.add("show");
-
-    toastHide = window.setTimeout(() => {
-      toast.classList.remove("show");
-      toastClear = window.setTimeout(() => {
-        toast.textContent = "";
-        toast.classList.remove("ok", "err");
-      }, 220);
-    }, 1600);
+  const timeDisplay = document.getElementById("timeDisplay");
+  function updateTime() {
+    if (!timeDisplay) return;
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, "0");
+    const mins = String(now.getMinutes()).padStart(2, "0");
+    timeDisplay.textContent = `${hours}:${mins}`;
   }
+  updateTime();
+  setInterval(updateTime, 10000);
 
-  function fallbackCopy(text) {
-    const textarea = document.createElement("textarea");
-    textarea.value = text;
-    textarea.setAttribute("readonly", "");
-    textarea.style.position = "fixed";
-    textarea.style.inset = "0 auto auto 0";
-    textarea.style.width = "1px";
-    textarea.style.height = "1px";
-    textarea.style.opacity = "0";
-    document.body.appendChild(textarea);
-    textarea.select();
+  // Spotlight follower
+  const spotlight = document.getElementById("spotlight");
+  let mouseX = window.innerWidth / 2;
+  let mouseY = window.innerHeight / 2;
+  let currentX = mouseX;
+  let currentY = mouseY;
 
-    let copied = false;
-    try {
-      copied = document.execCommand("copy");
-    } catch (_) {
-      copied = false;
-    }
-    textarea.remove();
-    return copied;
-  }
-
-  function copyHost(item) {
-    let host;
-    try {
-      host = new URL(item.href).host;
-    } catch (_) {
-      host = item.href;
-    }
-
-    const success = () => flash(`✓ ${host} скопирован`, true);
-    const failure = () => flash("Не удалось скопировать адрес", false);
-
-    if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
-      navigator.clipboard.writeText(host).then(success).catch(() => {
-        fallbackCopy(host) ? success() : failure();
-      });
-    } else {
-      fallbackCopy(host) ? success() : failure();
-    }
-  }
-
-  function isEditableTarget(target) {
-    return target instanceof Element && Boolean(
-      target.closest("input, textarea, select, [contenteditable='true'], [role='textbox']")
-    );
-  }
-
-  document.addEventListener("keydown", (event) => {
-    if (event.defaultPrevented || isEditableTarget(event.target)) return;
-
-    const key = event.key;
-    const code = event.code;
-    const hasCommand = event.ctrlKey || event.metaKey;
-
-    // Ctrl/Cmd+C копирует домен текущей строки, если текст не выделен.
-    if (hasCommand && !event.shiftKey && !event.altKey && code === "KeyC") {
-      const selection = window.getSelection ? String(window.getSelection()) : "";
-      if (selection) return;
-
-      const focusedIndex = items.indexOf(document.activeElement);
-      const targetIndex = focusedIndex >= 0 ? focusedIndex : current;
-      if (targetIndex >= 0) {
-        event.preventDefault();
-        copyHost(items[targetIndex]);
-      }
-      return;
-    }
-
-    if (hasCommand || event.altKey) return;
-
-    if (key === "ArrowDown") {
-      event.preventDefault();
-      focusAt(current < 0 ? 0 : current + 1);
-      return;
-    }
-
-    if (key === "ArrowUp") {
-      event.preventDefault();
-      focusAt(current < 0 ? items.length - 1 : current - 1);
-      return;
-    }
-
-    if (key === "Escape") {
-      if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
-      current = -1;
-      return;
-    }
-
-    // Не открываем несколько вкладок из-за удерживания горячей клавиши.
-    if (event.repeat) return;
-
-    if (/^[1-8]$/.test(key)) {
-      const index = Number(key) - 1;
-      if (index < items.length) {
-        event.preventDefault();
-        launch(index);
-      }
-      return;
-    }
-
-    const index = BY_CODE[code];
-    if (typeof index === "number") {
-      event.preventDefault();
-      launch(index);
+  window.addEventListener("mousemove", (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    if (spotlight) {
+      spotlight.style.opacity = "1";
     }
   });
 
-  // Синхронизируем выбранную строку и при обычной табуляции.
-  items.forEach((item, index) => {
-    item.addEventListener("focus", () => { current = index; });
+  window.addEventListener("mouseleave", () => {
+    if (spotlight) spotlight.style.opacity = "0";
+  });
+
+  function renderSpotlight() {
+    currentX += (mouseX - currentX) * 0.1;
+    currentY += (mouseY - currentY) * 0.1;
+    if (spotlight) {
+      spotlight.style.left = `${currentX}px`;
+      spotlight.style.top = `${currentY}px`;
+    }
+    requestAnimationFrame(renderSpotlight);
+  }
+  requestAnimationFrame(renderSpotlight);
+
+  // 3D Card Tilt Effect
+  const cards = document.querySelectorAll(".tilt-card");
+  cards.forEach(card => {
+    card.addEventListener("mousemove", (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const xc = rect.width / 2;
+      const yc = rect.height / 2;
+      const dx = (x - xc) / xc;
+      const dy = (y - yc) / yc;
+
+      card.style.transform = `perspective(1000px) rotateY(${dx * 6}deg) rotateX(${-dy * 6}deg) translateY(-3px)`;
+    });
+
+    card.addEventListener("mouseleave", () => {
+      card.style.transform = "perspective(1000px) rotateY(0deg) rotateX(0deg) translateY(0px)";
+      card.style.transition = "transform 400ms cubic-bezier(0.16, 1, 0.3, 1)";
+    });
+
+    card.addEventListener("mouseenter", () => {
+      card.style.transition = "none";
+    });
+  });
+
+  // Canvas Particle / Node Network Background
+  const canvas = document.getElementById("bgCanvas");
+  if (canvas) {
+    const ctx = canvas.getContext("2d");
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    window.addEventListener("resize", () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const particles = [];
+    const count = Math.min(Math.floor((width * height) / 18000), 60);
+
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        radius: Math.random() * 1.5 + 0.5
+      });
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+
+      ctx.fillStyle = "rgba(182, 154, 255, 0.25)";
+      ctx.strokeStyle = "rgba(182, 154, 255, 0.04)";
+      ctx.lineWidth = 1;
+
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0) p.x = width;
+        if (p.x > width) p.x = 0;
+        if (p.y < 0) p.y = height;
+        if (p.y > height) p.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        for (let j = i + 1; j < particles.length; j++) {
+          const p2 = particles[j];
+          const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      requestAnimationFrame(draw);
+    }
+    draw();
+  }
+
+  // Keyboard Shortcuts (1-9)
+  const BY_NUMBER = [
+    "https://blog.guilliman.ru",
+    "https://soma.guilliman.ru",
+    "https://input.guilliman.ru",
+    "https://tartan.guilliman.ru",
+    "https://walgen.guilliman.ru",
+    "https://stl.guilliman.ru",
+    "https://password.guilliman.ru",
+    "https://keytag.guilliman.ru",
+    "https://md.guilliman.ru"
+  ];
+
+  document.addEventListener("keydown", (e) => {
+    if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
+    const key = e.key;
+    if (/^[1-9]$/.test(key)) {
+      const idx = Number(key) - 1;
+      const url = BY_NUMBER[idx];
+      if (url) {
+        e.preventDefault();
+        window.open(url, "_blank", "noopener,noreferrer");
+      }
+    }
   });
 })();
