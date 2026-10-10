@@ -47,9 +47,40 @@
   }
   requestAnimationFrame(renderSpotlight);
 
-  // 3D Card Tilt Effect
+  // Web Audio API Sound Generator (Harmonic Pentatonic Scale)
+  let audioCtx = null;
+  function playCardSound(pitchIndex) {
+    try {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === "suspended") {
+        audioCtx.resume();
+      }
+
+      const frequencies = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50, 1174.66, 1318.51, 1567.98];
+      const freq = frequencies[pitchIndex % frequencies.length];
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+      gain.gain.setValueAtTime(0.035, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.16);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.16);
+    } catch (_) {}
+  }
+
+  // 3D Card Tilt Effect & Sound
   const cards = Array.from(document.querySelectorAll(".tilt-card"));
-  cards.forEach(card => {
+  cards.forEach((card, idx) => {
     card.addEventListener("mousemove", (e) => {
       const rect = card.getBoundingClientRect();
       const x = e.clientX - rect.left;
@@ -69,6 +100,11 @@
 
     card.addEventListener("mouseenter", () => {
       card.style.transition = "none";
+      playCardSound(idx);
+    });
+
+    card.addEventListener("focus", () => {
+      playCardSound(idx);
     });
   });
 
