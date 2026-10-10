@@ -49,24 +49,6 @@
 
   // Web Audio API Sound Generator (Harmonic Pentatonic Scale)
   let audioCtx = null;
-
-  function unlockAudio() {
-    try {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (audioCtx.state === "suspended") {
-        audioCtx.resume();
-      }
-    } catch (_) {}
-    window.removeEventListener("pointerdown", unlockAudio);
-    window.removeEventListener("keydown", unlockAudio);
-    window.removeEventListener("touchstart", unlockAudio);
-  }
-  window.addEventListener("pointerdown", unlockAudio, { once: true });
-  window.addEventListener("keydown", unlockAudio, { once: true });
-  window.addEventListener("touchstart", unlockAudio, { once: true });
-
   function playCardSound(pitchIndex) {
     try {
       if (!audioCtx) {
@@ -96,9 +78,9 @@
     } catch (_) {}
   }
 
-  // 3D Card Tilt Effect & Sound
+  // 3D Card Tilt Effect
   const cards = Array.from(document.querySelectorAll(".tilt-card"));
-  cards.forEach((card, idx) => {
+  cards.forEach((card) => {
     card.addEventListener("mousemove", (e) => {
       const rect = card.getBoundingClientRect();
       const x = e.clientX - rect.left;
@@ -118,11 +100,6 @@
 
     card.addEventListener("mouseenter", () => {
       card.style.transition = "none";
-      playCardSound(idx);
-    });
-
-    card.addEventListener("focus", () => {
-      playCardSound(idx);
     });
   });
 
@@ -189,7 +166,7 @@
     draw();
   }
 
-  // 2D Grid Keyboard Navigation & Shortcuts
+  // 2D Grid Keyboard Navigation & Shortcuts (with Sound)
   let currentFocusIndex = -1;
 
   function getColumnsCount() {
@@ -203,6 +180,7 @@
     if (!cards.length) return;
     currentFocusIndex = (index + cards.length) % cards.length;
     cards[currentFocusIndex].focus();
+    playCardSound(currentFocusIndex);
   }
 
   cards.forEach((card, idx) => {
