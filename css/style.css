@@ -323,12 +323,9 @@ a {
 }
 
 .copyright-trigger {
-  cursor: pointer;
+  cursor: default;
   user-select: none;
-  transition: color 200ms ease;
-}
-.copyright-trigger:hover {
-  color: var(--fg);
+  -webkit-user-select: none;
 }
 
 /* Piano Drawer */
