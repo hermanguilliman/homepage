@@ -230,4 +230,73 @@
       focusCard(currentFocusIndex < 0 ? 0 : currentFocusIndex - cols);
     }
   });
+
+  // Easter Egg Piano Logic
+  const copyrightTrigger = document.getElementById("copyrightTrigger");
+  const pianoDrawer = document.getElementById("pianoDrawer");
+  const pianoClose = document.getElementById("pianoClose");
+  const pianoKeys = document.querySelectorAll(".pkey");
+
+  let clickCount = 0;
+  let clickTimer = null;
+
+  if (copyrightTrigger && pianoDrawer) {
+    copyrightTrigger.addEventListener("click", () => {
+      clickCount++;
+      window.clearTimeout(clickTimer);
+      if (clickCount >= 3) {
+        pianoDrawer.hidden = false;
+        clickCount = 0;
+      } else {
+        clickTimer = window.setTimeout(() => {
+          clickCount = 0;
+        }, 500);
+      }
+    });
+  }
+
+  if (pianoClose && pianoDrawer) {
+    pianoClose.addEventListener("click", () => {
+      pianoDrawer.hidden = true;
+    });
+  }
+
+  const PIANO_CODES = {
+    KeyZ: 0,
+    KeyX: 1,
+    KeyC: 2,
+    KeyV: 3,
+    KeyB: 4,
+    KeyN: 5,
+    KeyM: 6,
+    Comma: 7,
+    Period: 8
+  };
+
+  pianoKeys.forEach((btn) => {
+    const idx = Number(btn.dataset.idx);
+    btn.addEventListener("click", () => {
+      playCardSound(idx);
+      btn.classList.add("active");
+      setTimeout(() => btn.classList.remove("active"), 150);
+    });
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (pianoDrawer && !pianoDrawer.hidden) {
+      const idx = PIANO_CODES[e.code];
+      if (typeof idx === "number") {
+        e.preventDefault();
+        playCardSound(idx);
+        const btn = document.querySelector(`.pkey[data-idx="${idx}"]`);
+        if (btn) {
+          btn.classList.add("active");
+          setTimeout(() => btn.classList.remove("active"), 150);
+        }
+      }
+      if (e.code === "Escape") {
+        pianoDrawer.hidden = true;
+      }
+    }
+  });
 })();

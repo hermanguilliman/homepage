@@ -169,12 +169,34 @@
     </main>
 
     <footer class="subfoot">
-      <span>© <span id="year"></span> Herman Guilliman</span>
+      <span id="copyrightTrigger" class="copyright-trigger" title="Тройной клик для пасхалки">© <span id="year"></span> Herman Guilliman</span>
       <div class="keys-info" aria-hidden="true">
         <span><kbd>1–9</kbd> запуск</span>
         <span><kbd>← → ↑ ↓</kbd> навигация</span>
       </div>
     </footer>
+  </div>
+
+  <!-- Easter Egg Piano Drawer -->
+  <div id="pianoDrawer" class="piano-drawer" hidden>
+    <div class="piano-glass"></div>
+    <div class="piano-content">
+      <div class="piano-header">
+        <span class="piano-name">🎹 Guilliman's Synth (Пасхалка активации)</span>
+        <button type="button" id="pianoClose" class="piano-close">✕</button>
+      </div>
+      <div class="piano-keys" id="pianoKeys">
+        <button class="pkey" data-idx="0"><kbd>Z</kbd></button>
+        <button class="pkey" data-idx="1"><kbd>X</kbd></button>
+        <button class="pkey" data-idx="2"><kbd>C</kbd></button>
+        <button class="pkey" data-idx="3"><kbd>V</kbd></button>
+        <button class="pkey" data-idx="4"><kbd>B</kbd></button>
+        <button class="pkey" data-idx="5"><kbd>N</kbd></button>
+        <button class="pkey" data-idx="6"><kbd>M</kbd></button>
+        <button class="pkey" data-idx="7"><kbd>,</kbd></button>
+        <button class="pkey" data-idx="8"><kbd>.</kbd></button>
+      </div>
+    </div>
   </div>
 
   <div id="toast" class="toast" role="status" aria-live="polite">
