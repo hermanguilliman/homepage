@@ -369,10 +369,7 @@ a {
 .piano-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  color: var(--muted);
+  justify-content: flex-end;
 }
 
 .piano-close {
