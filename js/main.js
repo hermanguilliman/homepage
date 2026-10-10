@@ -9,12 +9,13 @@
   function updateTime() {
     if (!timeDisplay) return;
     const now = new Date();
-    const hours = String(now.getHours()).padStart(2, "0");
-    const mins = String(now.getMinutes()).padStart(2, "0");
-    timeDisplay.textContent = `${hours}:${mins}`;
+    const options = { weekday: 'long', day: 'numeric', month: 'long' };
+    const dateStr = now.toLocaleDateString('ru-RU', options);
+    const formatted = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+    timeDisplay.textContent = formatted;
   }
   updateTime();
-  setInterval(updateTime, 10000);
+  setInterval(updateTime, 60000);
 
   // Spotlight follower
   const spotlight = document.getElementById("spotlight");
