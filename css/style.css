@@ -411,10 +411,16 @@ a {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-  padding-bottom: 10px;
+  justify-content: space-between;
+  padding: 10px 0;
   transition: all 100ms ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.note-lbl {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--dim);
 }
 
 .pkey kbd {
