@@ -191,7 +191,7 @@
 
   const BY_NUMBER = [
     "https://blog.guilliman.ru",
-    "https://soma.guilliman.ru",
+    "https://radio.guilliman.ru",
     "https://input.guilliman.ru",
     "https://tartan.guilliman.ru",
     "https://walgen.guilliman.ru",

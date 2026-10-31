@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="ru">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,11 +13,39 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Onest:wght@500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Onest:wght@500;600;700&display=swap"
+    rel="stylesheet">
 
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript">
+    (function (m, e, t, r, i, k, a) {
+      m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments) };
+      m[i].l = 1 * new Date();
+      for (var j = 0; j < document.scripts.length; j++) { if (document.scripts[j].src === r) { return; } }
+      k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a)
+    })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=113960221', 'ym');
+
+    ym(113960221, 'init', { ssr: true, webvisor: true, clickmap: true, ecommerce: "dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce: true, trackLinks: true });
+  </script>
+  <noscript>
+    <div><img src="https://mc.yandex.ru/watch/113960221" style="position:absolute; left:-9999px;" alt="" /></div>
+  </noscript>
+  <!-- /Yandex.Metrika counter -->
+  <!-- Yandex.RTB R-A-20314222-1 -->
+  <div id="yandex_rtb_R-A-20314222-1"></div>
+  <script>
+    window.yaContextCb.push(() => {
+      Ya.Context.AdvManager.render({
+        "blockId": "R-A-20314222-1",
+        "renderTo": "yandex_rtb_R-A-20314222-1"
+      })
+    })
+  </script>
   <!-- Interactive Canvas Background -->
   <canvas id="bgCanvas" aria-hidden="true"></canvas>
 
@@ -42,7 +71,8 @@
 
     <main class="hub-grid" id="projectGrid">
       <!-- 1. Blog -->
-      <a class="tilt-card" href="https://blog.guilliman.ru" target="_blank" rel="noopener noreferrer" data-host="blog.guilliman.ru" style="--accent: #f59e0b; --i: 0;">
+      <a class="tilt-card" href="https://blog.guilliman.ru" target="_blank" rel="noopener noreferrer"
+        data-host="blog.guilliman.ru" style="--accent: #f59e0b; --i: 0;">
         <div class="card-glass"></div>
         <div class="card-inner">
           <div class="card-top">
@@ -55,22 +85,24 @@
         </div>
       </a>
 
-      <!-- 2. SomaFM -->
-      <a class="tilt-card" href="https://soma.guilliman.ru" target="_blank" rel="noopener noreferrer" data-host="soma.guilliman.ru" style="--accent: #c9f24b; --i: 1;">
+      <!-- 2. Radio -->
+      <a class="tilt-card" href="https://radio.guilliman.ru" target="_blank" rel="noopener noreferrer"
+        data-host="radio.guilliman.ru" style="--accent: #c9f24b; --i: 1;">
         <div class="card-glass"></div>
         <div class="card-inner">
           <div class="card-top">
             <span class="card-num">02</span>
           </div>
           <div class="card-body">
-            <h2 class="card-host">soma<span class="tld">.guilliman.ru</span></h2>
-            <p class="card-desc">Генератор плейлиста SomaFM (M3U8, плеер)</p>
+            <h2 class="card-host">radio<span class="tld">.guilliman.ru</span></h2>
+            <p class="card-desc">Генератор плейлиста SomaFM и радио мира (M3U8, плеер)</p>
           </div>
         </div>
       </a>
 
       <!-- 3. Input -->
-      <a class="tilt-card" href="https://input.guilliman.ru" target="_blank" rel="noopener noreferrer" data-host="input.guilliman.ru" style="--accent: #38bdf8; --i: 2;">
+      <a class="tilt-card" href="https://input.guilliman.ru" target="_blank" rel="noopener noreferrer"
+        data-host="input.guilliman.ru" style="--accent: #38bdf8; --i: 2;">
         <div class="card-glass"></div>
         <div class="card-inner">
           <div class="card-top">
@@ -84,7 +116,8 @@
       </a>
 
       <!-- 4. Tartan -->
-      <a class="tilt-card" href="https://tartan.guilliman.ru" target="_blank" rel="noopener noreferrer" data-host="tartan.guilliman.ru" style="--accent: #f43f5e; --i: 3;">
+      <a class="tilt-card" href="https://tartan.guilliman.ru" target="_blank" rel="noopener noreferrer"
+        data-host="tartan.guilliman.ru" style="--accent: #f43f5e; --i: 3;">
         <div class="card-glass"></div>
         <div class="card-inner">
           <div class="card-top">
@@ -98,7 +131,8 @@
       </a>
 
       <!-- 5. Walgen -->
-      <a class="tilt-card" href="https://walgen.guilliman.ru" target="_blank" rel="noopener noreferrer" data-host="walgen.guilliman.ru" style="--accent: #a855f7; --i: 4;">
+      <a class="tilt-card" href="https://walgen.guilliman.ru" target="_blank" rel="noopener noreferrer"
+        data-host="walgen.guilliman.ru" style="--accent: #a855f7; --i: 4;">
         <div class="card-glass"></div>
         <div class="card-inner">
           <div class="card-top">
@@ -112,7 +146,8 @@
       </a>
 
       <!-- 6. STL -->
-      <a class="tilt-card" href="https://stl.guilliman.ru" target="_blank" rel="noopener noreferrer" data-host="stl.guilliman.ru" style="--accent: #06b6d4; --i: 5;">
+      <a class="tilt-card" href="https://stl.guilliman.ru" target="_blank" rel="noopener noreferrer"
+        data-host="stl.guilliman.ru" style="--accent: #06b6d4; --i: 5;">
         <div class="card-glass"></div>
         <div class="card-inner">
           <div class="card-top">
@@ -126,7 +161,8 @@
       </a>
 
       <!-- 7. Password -->
-      <a class="tilt-card" href="https://password.guilliman.ru" target="_blank" rel="noopener noreferrer" data-host="password.guilliman.ru" style="--accent: #10b981; --i: 6;">
+      <a class="tilt-card" href="https://password.guilliman.ru" target="_blank" rel="noopener noreferrer"
+        data-host="password.guilliman.ru" style="--accent: #10b981; --i: 6;">
         <div class="card-glass"></div>
         <div class="card-inner">
           <div class="card-top">
@@ -140,7 +176,8 @@
       </a>
 
       <!-- 8. Keytag -->
-      <a class="tilt-card" href="https://keytag.guilliman.ru" target="_blank" rel="noopener noreferrer" data-host="keytag.guilliman.ru" style="--accent: #eab308; --i: 7;">
+      <a class="tilt-card" href="https://keytag.guilliman.ru" target="_blank" rel="noopener noreferrer"
+        data-host="keytag.guilliman.ru" style="--accent: #eab308; --i: 7;">
         <div class="card-glass"></div>
         <div class="card-inner">
           <div class="card-top">
@@ -154,7 +191,8 @@
       </a>
 
       <!-- 9. Markdown -->
-      <a class="tilt-card" href="https://md.guilliman.ru" target="_blank" rel="noopener noreferrer" data-host="md.guilliman.ru" style="--accent: #6366f1; --i: 8;">
+      <a class="tilt-card" href="https://md.guilliman.ru" target="_blank" rel="noopener noreferrer"
+        data-host="md.guilliman.ru" style="--accent: #6366f1; --i: 8;">
         <div class="card-glass"></div>
         <div class="card-inner">
           <div class="card-top">
@@ -200,4 +238,5 @@
 
   <script src="js/main.js" defer></script>
 </body>
+
 </html>
