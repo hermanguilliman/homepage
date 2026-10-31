@@ -4,12 +4,28 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#030305">
-  <meta name="description" content="Центральный хаб проектов и веб-инструментов Herman Guilliman.">
-  <title>guilliman.ru — проекты и инструменты</title>
+  <title>Guilliman's Lab — бесплатные онлайн-инструменты, генераторы и веб-сервисы</title>
+  <meta name="description"
+    content="Лаборатория веб-инструментов Herman Guilliman: онлайн-радио и генератор M3U8, тест клавиатуры и мыши, просмотр STL 3D-моделей, конвертер HTML в Markdown, генератор паролей, паттернов и обоев.">
 
   <link rel="canonical" href="https://guilliman.ru/">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+
+  <!-- Open Graph для красивых ссылок в соцсетях и мессенджерах -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Guilliman's Lab">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:title" content="Guilliman's Lab — коллекция бесплатных веб-инструментов и сервисов">
+  <meta property="og:description"
+    content="9 быстрых онлайн-утилит в браузере без регистрации: от M3U8-радио и просмотра 3D STL-моделей до диагностики периферии и конвертера Markdown.">
+  <meta property="og:url" content="https://guilliman.ru/">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Guilliman's Lab — веб-инструменты и проекты">
+  <meta name="twitter:description"
+    content="9 быстрых онлайн-утилит в браузере: радио, тест клавиатуры и мыши, 3D STL-вьюер, генератор паролей, конвертер Markdown и др.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,17 +34,47 @@
     rel="stylesheet">
 
   <link rel="stylesheet" href="css/style.css">
+
+  <!-- Загрузчик Рекламной сети Яндекса (РСЯ) -->
+  <script>window.yaContextCb = window.yaContextCb || []</script>
+  <script src="https://yandex.ru/ads/system/context.js" async></script>
+
+  <!-- Микроразметка Schema.org: связывает главный домен со всеми 9 поддоменами для поисковиков -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Guilliman's Lab — веб-инструменты и проекты",
+    "url": "https://guilliman.ru/",
+    "description": "Каталог бесплатных браузерных онлайн-инструментов и сервисов Herman Guilliman.",
+    "inLanguage": "ru",
+    "mainEntity": {
+      "@type": "ItemList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Блог Herman Guilliman", "url": "https://blog.guilliman.ru/" },
+        { "@type": "ListItem", "position": 2, "name": "Guilliman's Radio — онлайн-радио и генератор M3U8", "url": "https://radio.guilliman.ru/" },
+        { "@type": "ListItem", "position": 3, "name": "Тест и диагностика клавиатуры, мыши и геймпада онлайн", "url": "https://input.guilliman.ru/" },
+        { "@type": "ListItem", "position": 4, "name": "Генератор шотландских клетчатых узоров (Тартан)", "url": "https://tartan.guilliman.ru/" },
+        { "@type": "ListItem", "position": 5, "name": "Генератор математических обоев по формулам", "url": "https://walgen.guilliman.ru/" },
+        { "@type": "ListItem", "position": 6, "name": "Онлайн-просмотр 3D-моделей STL для 3D-печати", "url": "https://stl.guilliman.ru/" },
+        { "@type": "ListItem", "position": 7, "name": "Генератор криптостойких паролей онлайн", "url": "https://password.guilliman.ru/" },
+        { "@type": "ListItem", "position": 8, "name": "Редактор и печать бирок для ключей", "url": "https://keytag.guilliman.ru/" },
+        { "@type": "ListItem", "position": 9, "name": "Онлайн-конвертер HTML в Markdown", "url": "https://md.guilliman.ru/" }
+      ]
+    }
+  }
+  </script>
 </head>
 
 <body>
   <!-- Yandex.Metrika counter -->
   <script type="text/javascript">
-    (function (m, e, t, r, i, k, a) {
-      m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments) };
-      m[i].l = 1 * new Date();
-      for (var j = 0; j < document.scripts.length; j++) { if (document.scripts[j].src === r) { return; } }
-      k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a)
-    })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=113960221', 'ym');
+      (function (m, e, t, r, i, k, a) {
+        m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments) };
+        m[i].l = 1 * new Date();
+        for (var j = 0; j < document.scripts.length; j++) { if (document.scripts[j].src === r) { return; } }
+        k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a)
+      })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=113960221', 'ym');
 
     ym(113960221, 'init', { ssr: true, webvisor: true, clickmap: true, ecommerce: "dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce: true, trackLinks: true });
   </script>
@@ -36,16 +82,7 @@
     <div><img src="https://mc.yandex.ru/watch/113960221" style="position:absolute; left:-9999px;" alt="" /></div>
   </noscript>
   <!-- /Yandex.Metrika counter -->
-  <!-- Yandex.RTB R-A-20314222-1 -->
-  <div id="yandex_rtb_R-A-20314222-1"></div>
-  <script>
-    window.yaContextCb.push(() => {
-      Ya.Context.AdvManager.render({
-        "blockId": "R-A-20314222-1",
-        "renderTo": "yandex_rtb_R-A-20314222-1"
-      })
-    })
-  </script>
+
   <!-- Interactive Canvas Background -->
   <canvas id="bgCanvas" aria-hidden="true"></canvas>
 
@@ -71,8 +108,8 @@
 
     <main class="hub-grid" id="projectGrid">
       <!-- 1. Blog -->
-      <a class="tilt-card" href="https://blog.guilliman.ru" target="_blank" rel="noopener noreferrer"
-        data-host="blog.guilliman.ru" style="--accent: #f59e0b; --i: 0;">
+      <a class="tilt-card" href="https://blog.guilliman.ru" target="_blank" rel="noopener" data-host="blog.guilliman.ru"
+        style="--accent: #f59e0b; --i: 0;">
         <div class="card-glass"></div>
         <div class="card-inner">
           <div class="card-top">
@@ -80,13 +117,13 @@
           </div>
           <div class="card-body">
             <h2 class="card-host">blog<span class="tld">.guilliman.ru</span></h2>
-            <p class="card-desc">Блог — статьи, заметки и публикации</p>
+            <p class="card-desc">Блог об IT, разработке, заметки и статьи</p>
           </div>
         </div>
       </a>
 
       <!-- 2. Radio -->
-      <a class="tilt-card" href="https://radio.guilliman.ru" target="_blank" rel="noopener noreferrer"
+      <a class="tilt-card" href="https://radio.guilliman.ru" target="_blank" rel="noopener"
         data-host="radio.guilliman.ru" style="--accent: #c9f24b; --i: 1;">
         <div class="card-glass"></div>
         <div class="card-inner">
@@ -95,13 +132,13 @@
           </div>
           <div class="card-body">
             <h2 class="card-host">radio<span class="tld">.guilliman.ru</span></h2>
-            <p class="card-desc">Генератор плейлиста SomaFM и радио мира (M3U8, плеер)</p>
+            <p class="card-desc">Онлайн-радио и генератор плейлистов SomaFM и мира (M3U8)</p>
           </div>
         </div>
       </a>
 
       <!-- 3. Input -->
-      <a class="tilt-card" href="https://input.guilliman.ru" target="_blank" rel="noopener noreferrer"
+      <a class="tilt-card" href="https://input.guilliman.ru" target="_blank" rel="noopener"
         data-host="input.guilliman.ru" style="--accent: #38bdf8; --i: 2;">
         <div class="card-glass"></div>
         <div class="card-inner">
@@ -110,13 +147,13 @@
           </div>
           <div class="card-body">
             <h2 class="card-host">input<span class="tld">.guilliman.ru</span></h2>
-            <p class="card-desc">Диагностика клавиатуры, мыши и периферии</p>
+            <p class="card-desc">Онлайн-тест и диагностика клавиатуры, мыши и периферии</p>
           </div>
         </div>
       </a>
 
       <!-- 4. Tartan -->
-      <a class="tilt-card" href="https://tartan.guilliman.ru" target="_blank" rel="noopener noreferrer"
+      <a class="tilt-card" href="https://tartan.guilliman.ru" target="_blank" rel="noopener"
         data-host="tartan.guilliman.ru" style="--accent: #f43f5e; --i: 3;">
         <div class="card-glass"></div>
         <div class="card-inner">
@@ -125,13 +162,13 @@
           </div>
           <div class="card-body">
             <h2 class="card-host">tartan<span class="tld">.guilliman.ru</span></h2>
-            <p class="card-desc">Создание шотландских клетчатых узоров</p>
+            <p class="card-desc">Генератор бесшовных шотландских клетчатых узоров (тартан)</p>
           </div>
         </div>
       </a>
 
       <!-- 5. Walgen -->
-      <a class="tilt-card" href="https://walgen.guilliman.ru" target="_blank" rel="noopener noreferrer"
+      <a class="tilt-card" href="https://walgen.guilliman.ru" target="_blank" rel="noopener"
         data-host="walgen.guilliman.ru" style="--accent: #a855f7; --i: 4;">
         <div class="card-glass"></div>
         <div class="card-inner">
@@ -140,14 +177,14 @@
           </div>
           <div class="card-body">
             <h2 class="card-host">walgen<span class="tld">.guilliman.ru</span></h2>
-            <p class="card-desc">Генератор обоев по формулам</p>
+            <p class="card-desc">Генератор абстрактных обоев и фонов по формулам</p>
           </div>
         </div>
       </a>
 
       <!-- 6. STL -->
-      <a class="tilt-card" href="https://stl.guilliman.ru" target="_blank" rel="noopener noreferrer"
-        data-host="stl.guilliman.ru" style="--accent: #06b6d4; --i: 5;">
+      <a class="tilt-card" href="https://stl.guilliman.ru" target="_blank" rel="noopener" data-host="stl.guilliman.ru"
+        style="--accent: #06b6d4; --i: 5;">
         <div class="card-glass"></div>
         <div class="card-inner">
           <div class="card-top">
@@ -155,13 +192,13 @@
           </div>
           <div class="card-body">
             <h2 class="card-host">stl<span class="tld">.guilliman.ru</span></h2>
-            <p class="card-desc">Просмотр 3D-моделей для печати</p>
+            <p class="card-desc">Онлайн 3D-просмотрщик STL-моделей для 3D-печати</p>
           </div>
         </div>
       </a>
 
       <!-- 7. Password -->
-      <a class="tilt-card" href="https://password.guilliman.ru" target="_blank" rel="noopener noreferrer"
+      <a class="tilt-card" href="https://password.guilliman.ru" target="_blank" rel="noopener"
         data-host="password.guilliman.ru" style="--accent: #10b981; --i: 6;">
         <div class="card-glass"></div>
         <div class="card-inner">
@@ -170,13 +207,13 @@
           </div>
           <div class="card-body">
             <h2 class="card-host">password<span class="tld">.guilliman.ru</span></h2>
-            <p class="card-desc">Генератор криптостойких паролей</p>
+            <p class="card-desc">Генератор надежных криптостойких паролей в браузере</p>
           </div>
         </div>
       </a>
 
       <!-- 8. Keytag -->
-      <a class="tilt-card" href="https://keytag.guilliman.ru" target="_blank" rel="noopener noreferrer"
+      <a class="tilt-card" href="https://keytag.guilliman.ru" target="_blank" rel="noopener"
         data-host="keytag.guilliman.ru" style="--accent: #eab308; --i: 7;">
         <div class="card-glass"></div>
         <div class="card-inner">
@@ -185,14 +222,14 @@
           </div>
           <div class="card-body">
             <h2 class="card-host">keytag<span class="tld">.guilliman.ru</span></h2>
-            <p class="card-desc">Редактор сетки бирок для ключей</p>
+            <p class="card-desc">Конструктор и печать сетки вкладышей-бирок для ключей</p>
           </div>
         </div>
       </a>
 
       <!-- 9. Markdown -->
-      <a class="tilt-card" href="https://md.guilliman.ru" target="_blank" rel="noopener noreferrer"
-        data-host="md.guilliman.ru" style="--accent: #6366f1; --i: 8;">
+      <a class="tilt-card" href="https://md.guilliman.ru" target="_blank" rel="noopener" data-host="md.guilliman.ru"
+        style="--accent: #6366f1; --i: 8;">
         <div class="card-glass"></div>
         <div class="card-inner">
           <div class="card-top">
@@ -200,11 +237,22 @@
           </div>
           <div class="card-body">
             <h2 class="card-host">md<span class="tld">.guilliman.ru</span></h2>
-            <p class="card-desc">Конвертер HTML в Markdown</p>
+            <p class="card-desc">Быстрый онлайн-конвертер HTML-разметки в Markdown</p>
           </div>
         </div>
       </a>
     </main>
+
+    <!-- Рекламный блок РСЯ (аккуратно под сеткой проектов) -->
+    <div id="yandex_rtb_R-A-20314222-1" style="margin-top: 2rem;"></div>
+    <script>
+      window.yaContextCb.push(() => {
+        Ya.Context.AdvManager.render({
+          "blockId": "R-A-20314222-1",
+          "renderTo": "yandex_rtb_R-A-20314222-1"
+        })
+      })
+    </script>
 
     <footer class="subfoot">
       <span id="copyrightTrigger" class="copyright-trigger">© <span id="year"></span> Herman Guilliman</span>
