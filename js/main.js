@@ -27,9 +27,7 @@
     window.addEventListener("mousemove", (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
-        if (spotlight) {
-            spotlight.style.opacity = "1";
-        }
+        if (spotlight) spotlight.style.opacity = "1";
     });
 
     window.addEventListener("mouseleave", () => {
@@ -47,55 +45,323 @@
     }
     requestAnimationFrame(renderSpotlight);
 
-    // Web Audio API Sound Generator (Harmonic Pentatonic Scale)
+    // ============================================================================
+    // POLYPHONIC WEB AUDIO SYNTHESIZER + FX + OSCILLOSCOPE + LOOPER
+    // ============================================================================
+    const BASE_FREQS = [
+        523.25, 587.33, 659.25, 783.99, 880.0, 1046.5, 1174.66, 1318.51,
+        1567.98,
+    ];
+    const NOTE_NAMES = [
+        ["C4", "D4", "E4", "G4", "A4", "C5", "D5", "E5", "G5"],
+        ["C5", "D5", "E5", "G5", "A5", "C6", "D6", "E6", "G6"],
+        ["C6", "D6", "E6", "G6", "A6", "C7", "D7", "E7", "G7"],
+    ];
+
+    const PRESETS = [
+        {
+            name: "Crystal",
+            type1: "sine",
+            type2: "triangle",
+            detune: 4,
+            subGain: 0.25,
+            cutoff: 3800,
+            attack: 0.015,
+            release: 0.35,
+        },
+        {
+            name: "Cyber Saw",
+            type1: "sawtooth",
+            type2: "sawtooth",
+            detune: 10,
+            subGain: 0.5,
+            cutoff: 2200,
+            attack: 0.01,
+            release: 0.25,
+        },
+        {
+            name: "8-Bit",
+            type1: "square",
+            type2: "square",
+            detune: 0,
+            subGain: 0.0,
+            cutoff: 4500,
+            attack: 0.005,
+            release: 0.12,
+        },
+        {
+            name: "Warm Pad",
+            type1: "triangle",
+            type2: "sawtooth",
+            detune: 14,
+            subGain: 0.45,
+            cutoff: 1400,
+            attack: 0.06,
+            release: 0.65,
+        },
+    ];
+
     let audioCtx = null;
-    function playCardSound(pitchIndex) {
+    let masterGain = null;
+    let analyser = null;
+    let delaySend = null;
+
+    let presetIndex = 0;
+    let octaveShift = 0; // -1, 0, +1
+    let delayEnabled = true;
+
+    const activeVoices = new Map(); // voiceKey -> { stop() }
+    const bgRipples = []; // Visual ripples on background canvas
+
+    function initAudioEngine() {
+        if (audioCtx) {
+            if (audioCtx.state === "suspended") audioCtx.resume();
+            return;
+        }
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new Ctx();
+
+        masterGain = audioCtx.createGain();
+        masterGain.gain.value = 0.3;
+
+        // Dynamics compressor to prevent clipping on chords
+        const compressor = audioCtx.createDynamicsCompressor();
+        compressor.threshold.value = -14;
+        compressor.ratio.value = 4;
+
+        // Analyser for mini oscilloscope
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+
+        // Stereo Ping-Pong / Space Delay FX
+        delaySend = audioCtx.createGain();
+        delaySend.gain.value = delayEnabled ? 0.32 : 0;
+
+        const delayNode = audioCtx.createDelay(1.0);
+        delayNode.delayTime.value = 0.26;
+
+        const delayFeedback = audioCtx.createGain();
+        delayFeedback.gain.value = 0.38;
+
+        const delayFilter = audioCtx.createBiquadFilter();
+        delayFilter.type = "lowpass";
+        delayFilter.frequency.value = 1800;
+
+        // Routing
+        masterGain.connect(compressor);
+        masterGain.connect(delaySend);
+
+        delaySend.connect(delayNode);
+        delayNode.connect(delayFilter);
+        delayFilter.connect(delayFeedback);
+        delayFeedback.connect(delayNode);
+        delayFilter.connect(compressor);
+
+        compressor.connect(analyser);
+        analyser.connect(audioCtx.destination);
+
+        startOscilloscope();
+    }
+
+    function getCardAccentColor(idx) {
+        const colors = [
+            "#f59e0b",
+            "#c9f24b",
+            "#38bdf8",
+            "#f43f5e",
+            "#a855f7",
+            "#06b6d4",
+            "#10b981",
+            "#eab308",
+            "#6366f1",
+        ];
+        return colors[idx % colors.length];
+    }
+
+    function triggerVisualFeedback(pitchIndex) {
+        const idx = pitchIndex % 9;
+        // Pulse corresponding project card
+        const card = cards[idx];
+        if (card) {
+            card.classList.add("synth-pulse");
+            setTimeout(() => card.classList.remove("synth-pulse"), 240);
+
+            const rect = card.getBoundingClientRect();
+            bgRipples.push({
+                x: rect.left + rect.width / 2,
+                y: rect.top + rect.height / 2,
+                r: 10,
+                alpha: 0.55,
+                color: getCardAccentColor(idx),
+            });
+        }
+    }
+
+    function startNote(
+        pitchIndex,
+        voiceId = `key-${pitchIndex}`,
+        fromLooper = false,
+    ) {
         try {
-            if (!audioCtx) {
-                audioCtx = new (
-                    window.AudioContext || window.webkitAudioContext
-                )();
-            }
-            if (audioCtx.state === "suspended") {
-                audioCtx.resume();
-            }
+            initAudioEngine();
+            if (activeVoices.has(voiceId)) return;
 
-            const frequencies = [
-                523.25, 587.33, 659.25, 783.99, 880.0, 1046.5, 1174.66, 1318.51,
-                1567.98,
-            ];
-            const freq = frequencies[pitchIndex % frequencies.length];
+            const preset = PRESETS[presetIndex];
+            const baseFreq = BASE_FREQS[pitchIndex % BASE_FREQS.length];
+            const freq = baseFreq * Math.pow(2, octaveShift);
+            const now = audioCtx.currentTime;
 
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-
-            osc.type = "sine";
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-
-            gain.gain.setValueAtTime(0.035, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(
-                0.0001,
-                audioCtx.currentTime + 0.16,
+            const voiceGain = audioCtx.createGain();
+            voiceGain.gain.setValueAtTime(0.0001, now);
+            voiceGain.gain.linearRampToValueAtTime(0.28, now + preset.attack);
+            voiceGain.gain.exponentialRampToValueAtTime(
+                0.18,
+                now + preset.attack + 0.15,
             );
 
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = "lowpass";
+            filter.frequency.setValueAtTime(
+                preset.cutoff * Math.pow(1.25, octaveShift),
+                now,
+            );
+            filter.Q.value = 2.2;
 
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.16);
+            const osc1 = audioCtx.createOscillator();
+            osc1.type = preset.type1;
+            osc1.frequency.setValueAtTime(freq, now);
+
+            const osc2 = audioCtx.createOscillator();
+            osc2.type = preset.type2;
+            osc2.frequency.setValueAtTime(freq, now);
+            osc2.detune.setValueAtTime(preset.detune, now);
+
+            const osc2Gain = audioCtx.createGain();
+            osc2Gain.gain.value = preset.subGain;
+
+            osc1.connect(filter);
+            osc2.connect(osc2Gain);
+            osc2Gain.connect(filter);
+
+            filter.connect(voiceGain);
+            voiceGain.connect(masterGain);
+
+            osc1.start(now);
+            osc2.start(now);
+
+            activeVoices.set(voiceId, {
+                pitchIndex,
+                stop() {
+                    const t = audioCtx.currentTime;
+                    voiceGain.gain.cancelScheduledValues(t);
+                    voiceGain.gain.setValueAtTime(
+                        Math.max(voiceGain.gain.value, 0.0001),
+                        t,
+                    );
+                    voiceGain.gain.exponentialRampToValueAtTime(
+                        0.0001,
+                        t + preset.release,
+                    );
+                    osc1.stop(t + preset.release + 0.02);
+                    osc2.stop(t + preset.release + 0.02);
+                },
+            });
+
+            // Highlight piano key UI
+            const btn = document.querySelector(
+                `.pkey[data-idx="${pitchIndex}"]`,
+            );
+            if (btn) btn.classList.add("active");
+
+            triggerVisualFeedback(pitchIndex);
+
+            // Record event if looper is recording
+            if (looperState === "recording" && !fromLooper) {
+                recordedEvents.push({
+                    type: "on",
+                    idx: pitchIndex,
+                    time: performance.now() - recordStartTime,
+                });
+            }
         } catch (_) {}
     }
 
-    // Toast & Copy to Clipboard
+    function stopNote(
+        pitchIndex,
+        voiceId = `key-${pitchIndex}`,
+        fromLooper = false,
+    ) {
+        const voice = activeVoices.get(voiceId);
+        if (!voice) return;
+        voice.stop();
+        activeVoices.delete(voiceId);
+
+        const btn = document.querySelector(`.pkey[data-idx="${pitchIndex}"]`);
+        if (btn) btn.classList.remove("active");
+
+        if (looperState === "recording" && !fromLooper) {
+            recordedEvents.push({
+                type: "off",
+                idx: pitchIndex,
+                time: performance.now() - recordStartTime,
+            });
+        }
+    }
+
+    // Short one-shot sound for card keyboard navigation & copy action
+    function playCardSound(pitchIndex) {
+        const id = `oneshot-${pitchIndex}-${performance.now()}`;
+        startNote(pitchIndex, id, true);
+        setTimeout(() => stopNote(pitchIndex, id, true), 120);
+    }
+
+    // Oscilloscope Renderer
+    const scopeCanvas = document.getElementById("synthScope");
+    function startOscilloscope() {
+        if (!scopeCanvas || !analyser) return;
+        const sCtx = scopeCanvas.getContext("2d");
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+
+        function renderScope() {
+            requestAnimationFrame(renderScope);
+            if (!pianoDrawer || pianoDrawer.hidden) return;
+
+            analyser.getByteTimeDomainData(dataArray);
+            const w = scopeCanvas.width;
+            const h = scopeCanvas.height;
+
+            sCtx.clearRect(0, 0, w, h);
+            sCtx.lineWidth = 1.5;
+            sCtx.strokeStyle = "#b69aff";
+            sCtx.beginPath();
+
+            const sliceWidth = w / bufferLength;
+            let x = 0;
+
+            for (let i = 0; i < bufferLength; i++) {
+                const v = dataArray[i] / 128.0;
+                const y = (v * h) / 2;
+                if (i === 0) sCtx.moveTo(x, y);
+                else sCtx.lineTo(x, y);
+                x += sliceWidth;
+            }
+            sCtx.lineTo(w, h / 2);
+            sCtx.stroke();
+        }
+        renderScope();
+    }
+
+    // ============================================================================
+    // TOAST & COPY TO CLIPBOARD
+    // ============================================================================
     const toast = document.getElementById("toast");
     let toastTimer = null;
 
     function showToast(message) {
         if (!toast) return;
         const span = toast.querySelector("span");
-        if (span && message) {
-            span.textContent = message;
-        }
+        if (span && message) span.textContent = message;
         toast.classList.add("show");
         window.clearTimeout(toastTimer);
         toastTimer = window.setTimeout(() => {
@@ -154,7 +420,9 @@
         }
     });
 
-    // Canvas Particle / Node Network Background
+    // ============================================================================
+    // CANVAS PARTICLE NETWORK + SOUND RIPPLES
+    // ============================================================================
     const canvas = document.getElementById("bgCanvas");
     if (canvas) {
         const ctx = canvas.getContext("2d");
@@ -181,6 +449,24 @@
 
         function draw() {
             ctx.clearRect(0, 0, width, height);
+
+            // Draw Sound Ripples from Synth
+            for (let r = bgRipples.length - 1; r >= 0; r--) {
+                const rip = bgRipples[r];
+                rip.r += 4.5;
+                rip.alpha *= 0.95;
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(rip.x, rip.y, rip.r, 0, Math.PI * 2);
+                ctx.strokeStyle = rip.color;
+                ctx.globalAlpha = rip.alpha;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.restore();
+
+                if (rip.alpha < 0.02) bgRipples.splice(r, 1);
+            }
 
             ctx.fillStyle = "rgba(182, 154, 255, 0.25)";
             ctx.strokeStyle = "rgba(182, 154, 255, 0.04)";
@@ -217,13 +503,208 @@
         draw();
     }
 
-    // Easter Egg Piano Elements
+    // ============================================================================
+    // SYNTH CONTROLS, POINTER GLISSANDO & LOOPER
+    // ============================================================================
     const copyrightTrigger = document.getElementById("copyrightTrigger");
     const pianoDrawer = document.getElementById("pianoDrawer");
     const pianoClose = document.getElementById("pianoClose");
     const pianoKeys = document.querySelectorAll(".pkey");
 
-    // 2D Grid Keyboard Navigation & Shortcuts (with Sound)
+    const synthWaveBtn = document.getElementById("synthWaveBtn");
+    const synthWaveLbl = document.getElementById("synthWaveLbl");
+    const synthOctBtn = document.getElementById("synthOctBtn");
+    const synthOctLbl = document.getElementById("synthOctLbl");
+    const synthDelayBtn = document.getElementById("synthDelayBtn");
+    const synthRecBtn = document.getElementById("synthRecBtn");
+    const synthRecLbl = document.getElementById("synthRecLbl");
+    const synthDot = document.getElementById("synthDot");
+
+    function cyclePreset() {
+        presetIndex = (presetIndex + 1) % PRESETS.length;
+        if (synthWaveLbl) synthWaveLbl.textContent = PRESETS[presetIndex].name;
+    }
+
+    function setOctave(newOct) {
+        octaveShift = Math.max(-1, Math.min(1, newOct));
+        if (synthOctLbl)
+            synthOctLbl.textContent =
+                octaveShift > 0 ? `+${octaveShift}` : String(octaveShift);
+        const names = NOTE_NAMES[octaveShift + 1];
+        pianoKeys.forEach((btn, idx) => {
+            const lbl = btn.querySelector(".note-lbl");
+            if (lbl && names[idx]) lbl.textContent = names[idx];
+        });
+    }
+
+    function toggleDelay() {
+        delayEnabled = !delayEnabled;
+        if (delaySend && audioCtx) {
+            delaySend.gain.setTargetAtTime(
+                delayEnabled ? 0.32 : 0,
+                audioCtx.currentTime,
+                0.04,
+            );
+        }
+        if (synthDelayBtn)
+            synthDelayBtn.classList.toggle("active", delayEnabled);
+    }
+
+    if (synthWaveBtn) synthWaveBtn.addEventListener("click", cyclePreset);
+    if (synthOctBtn) {
+        synthOctBtn.addEventListener("click", () => {
+            setOctave(octaveShift >= 1 ? -1 : octaveShift + 1);
+        });
+    }
+    if (synthDelayBtn) synthDelayBtn.addEventListener("click", toggleDelay);
+
+    // Looper State Machine: "idle" -> "recording" -> "playing" -> "idle"
+    let looperState = "idle";
+    let recordedEvents = [];
+    let recordStartTime = 0;
+    let loopDuration = 0;
+    let loopTimeouts = [];
+    let loopInterval = null;
+
+    function clearLoopPlayback() {
+        loopTimeouts.forEach((t) => clearTimeout(t));
+        loopTimeouts = [];
+        if (loopInterval) {
+            clearInterval(loopInterval);
+            loopInterval = null;
+        }
+        // Stop any lingering looper voices
+        for (const [key] of activeVoices) {
+            if (key.startsWith("loop-"))
+                stopNote(activeVoices.get(key).pitchIndex, key, true);
+        }
+    }
+
+    function playLoopIteration() {
+        recordedEvents.forEach((ev) => {
+            const t = setTimeout(() => {
+                if (looperState !== "playing") return;
+                const vId = `loop-${ev.idx}`;
+                if (ev.type === "on") startNote(ev.idx, vId, true);
+                else stopNote(ev.idx, vId, true);
+            }, ev.time);
+            loopTimeouts.push(t);
+        });
+    }
+
+    if (synthRecBtn) {
+        synthRecBtn.addEventListener("click", () => {
+            if (looperState === "idle") {
+                recordedEvents = [];
+                recordStartTime = performance.now();
+                looperState = "recording";
+                synthRecBtn.classList.add("recording");
+                if (synthDot) synthDot.classList.add("rec");
+                if (synthRecLbl) synthRecLbl.textContent = "■ Stop";
+            } else if (looperState === "recording") {
+                loopDuration = Math.max(
+                    400,
+                    performance.now() - recordStartTime,
+                );
+                if (recordedEvents.length === 0) {
+                    looperState = "idle";
+                    synthRecBtn.classList.remove("recording");
+                    if (synthDot) synthDot.classList.remove("rec");
+                    if (synthRecLbl) synthRecLbl.textContent = "● Rec";
+                    return;
+                }
+                looperState = "playing";
+                synthRecBtn.classList.remove("recording");
+                synthRecBtn.classList.add("playing");
+                if (synthDot) synthDot.classList.remove("rec");
+                if (synthRecLbl) synthRecLbl.textContent = "▶ Loop";
+
+                playLoopIteration();
+                loopInterval = setInterval(playLoopIteration, loopDuration);
+            } else {
+                clearLoopPlayback();
+                looperState = "idle";
+                synthRecBtn.classList.remove("playing", "recording");
+                if (synthRecLbl) synthRecLbl.textContent = "● Rec";
+            }
+        });
+    }
+
+    // Pointer Glissando (slide across keys with mouse or finger)
+    let isPointerDown = false;
+    let currentPointerIdx = null;
+
+    pianoKeys.forEach((btn) => {
+        const idx = Number(btn.dataset.idx);
+
+        btn.addEventListener("pointerdown", (e) => {
+            e.preventDefault();
+            isPointerDown = true;
+            currentPointerIdx = idx;
+            startNote(idx, `ptr-${idx}`);
+        });
+
+        btn.addEventListener("pointerenter", () => {
+            if (isPointerDown && currentPointerIdx !== idx) {
+                if (currentPointerIdx !== null) {
+                    stopNote(currentPointerIdx, `ptr-${currentPointerIdx}`);
+                }
+                currentPointerIdx = idx;
+                startNote(idx, `ptr-${idx}`);
+            }
+        });
+    });
+
+    window.addEventListener("pointerup", () => {
+        if (isPointerDown) {
+            isPointerDown = false;
+            if (currentPointerIdx !== null) {
+                stopNote(currentPointerIdx, `ptr-${currentPointerIdx}`);
+                currentPointerIdx = null;
+            }
+        }
+    });
+
+    // Easter Egg Open / Close
+    let clickCount = 0;
+    let clickTimer = null;
+
+    if (copyrightTrigger && pianoDrawer) {
+        copyrightTrigger.addEventListener("click", () => {
+            clickCount++;
+            window.clearTimeout(clickTimer);
+            if (clickCount >= 3) {
+                pianoDrawer.hidden = false;
+                initAudioEngine();
+                clickCount = 0;
+            } else {
+                clickTimer = window.setTimeout(() => {
+                    clickCount = 0;
+                }, 500);
+            }
+        });
+    }
+
+    function closePiano() {
+        if (!pianoDrawer) return;
+        pianoDrawer.hidden = true;
+        clearLoopPlayback();
+        looperState = "idle";
+        if (synthRecBtn) synthRecBtn.classList.remove("playing", "recording");
+        if (synthDot) synthDot.classList.remove("rec");
+        if (synthRecLbl) synthRecLbl.textContent = "● Rec";
+        for (const [key, voice] of activeVoices) {
+            stopNote(voice.pitchIndex, key, true);
+        }
+    }
+
+    if (pianoClose) {
+        pianoClose.addEventListener("click", closePiano);
+    }
+
+    // ============================================================================
+    // KEYBOARD NAVIGATION & POLYPHONIC SYNTH KEYBOARD INPUT
+    // ============================================================================
     let currentFocusIndex = -1;
 
     function getColumnsCount() {
@@ -258,10 +739,50 @@
         "https://md.guilliman.ru",
     ];
 
+    const PIANO_CODES = {
+        KeyZ: 0,
+        KeyX: 1,
+        KeyC: 2,
+        KeyV: 3,
+        KeyB: 4,
+        KeyN: 5,
+        KeyM: 6,
+        Comma: 7,
+        Period: 8,
+    };
+
     document.addEventListener("keydown", (e) => {
         if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
 
         const isPianoOpen = pianoDrawer && !pianoDrawer.hidden;
+
+        // Piano Keyboard Controls (when drawer is open)
+        if (isPianoOpen) {
+            if (e.code === "Escape") {
+                e.preventDefault();
+                closePiano();
+                return;
+            }
+            if (e.code === "BracketLeft") {
+                e.preventDefault();
+                setOctave(octaveShift - 1);
+                return;
+            }
+            if (e.code === "BracketRight") {
+                e.preventDefault();
+                setOctave(octaveShift + 1);
+                return;
+            }
+            const idx = PIANO_CODES[e.code];
+            if (typeof idx === "number") {
+                e.preventDefault();
+                if (!e.repeat) {
+                    startNote(idx, `kbd-${idx}`);
+                }
+                return;
+            }
+        }
+
         const key = e.key;
 
         if (/^[1-9]$/.test(key)) {
@@ -297,67 +818,11 @@
         }
     });
 
-    // Easter Egg Piano Logic
-    let clickCount = 0;
-    let clickTimer = null;
-
-    if (copyrightTrigger && pianoDrawer) {
-        copyrightTrigger.addEventListener("click", () => {
-            clickCount++;
-            window.clearTimeout(clickTimer);
-            if (clickCount >= 3) {
-                pianoDrawer.hidden = false;
-                clickCount = 0;
-            } else {
-                clickTimer = window.setTimeout(() => {
-                    clickCount = 0;
-                }, 500);
-            }
-        });
-    }
-
-    if (pianoClose && pianoDrawer) {
-        pianoClose.addEventListener("click", () => {
-            pianoDrawer.hidden = true;
-        });
-    }
-
-    const PIANO_CODES = {
-        KeyZ: 0,
-        KeyX: 1,
-        KeyC: 2,
-        KeyV: 3,
-        KeyB: 4,
-        KeyN: 5,
-        KeyM: 6,
-        Comma: 7,
-        Period: 8,
-    };
-
-    pianoKeys.forEach((btn) => {
-        const idx = Number(btn.dataset.idx);
-        btn.addEventListener("click", () => {
-            playCardSound(idx);
-            btn.classList.add("active");
-            setTimeout(() => btn.classList.remove("active"), 150);
-        });
-    });
-
-    document.addEventListener("keydown", (e) => {
-        if (pianoDrawer && !pianoDrawer.hidden) {
-            const idx = PIANO_CODES[e.code];
-            if (typeof idx === "number") {
-                e.preventDefault();
-                playCardSound(idx);
-                const btn = document.querySelector(`.pkey[data-idx="${idx}"]`);
-                if (btn) {
-                    btn.classList.add("active");
-                    setTimeout(() => btn.classList.remove("active"), 150);
-                }
-            }
-            if (e.code === "Escape") {
-                pianoDrawer.hidden = true;
-            }
+    document.addEventListener("keyup", (e) => {
+        if (!pianoDrawer || pianoDrawer.hidden) return;
+        const idx = PIANO_CODES[e.code];
+        if (typeof idx === "number") {
+            stopNote(idx, `kbd-${idx}`);
         }
     });
 })();

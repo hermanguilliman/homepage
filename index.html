@@ -259,23 +259,46 @@
     </footer>
   </div>
 
-  <!-- Easter Egg Piano Drawer -->
+  <!-- Easter Egg Synth Drawer -->
   <div id="pianoDrawer" class="piano-drawer" hidden>
     <div class="piano-glass"></div>
     <div class="piano-content">
       <div class="piano-header">
-        <button type="button" id="pianoClose" class="piano-close">✕</button>
+        <div class="synth-brand">
+          <span class="synth-dot" id="synthDot"></span>
+          <span class="synth-title">LAB SYNTH-09</span>
+        </div>
+
+        <canvas id="synthScope" class="synth-scope" width="140" height="26" aria-hidden="true"></canvas>
+
+        <div class="synth-controls">
+          <button type="button" id="synthWaveBtn" class="synth-btn" title="Тембр синтезатора (Tab)">
+            Wave: <strong id="synthWaveLbl">Crystal</strong>
+          </button>
+          <button type="button" id="synthOctBtn" class="synth-btn" title="Октава (клавиши [ и ])">
+            Oct: <strong id="synthOctLbl">0</strong>
+          </button>
+          <button type="button" id="synthDelayBtn" class="synth-btn active" title="Пространственное эхо">
+            Echo
+          </button>
+          <button type="button" id="synthRecBtn" class="synth-btn" title="Запись / Воспроизведение лупа">
+            <span id="synthRecLbl">● Rec</span>
+          </button>
+        </div>
+
+        <button type="button" id="pianoClose" class="piano-close" aria-label="Закрыть синтезатор">✕</button>
       </div>
+
       <div class="piano-keys" id="pianoKeys">
-        <button class="pkey" data-idx="0"><span class="note-lbl">C5</span><kbd>Z</kbd></button>
-        <button class="pkey" data-idx="1"><span class="note-lbl">D5</span><kbd>X</kbd></button>
-        <button class="pkey" data-idx="2"><span class="note-lbl">E5</span><kbd>C</kbd></button>
-        <button class="pkey" data-idx="3"><span class="note-lbl">G5</span><kbd>V</kbd></button>
-        <button class="pkey" data-idx="4"><span class="note-lbl">A5</span><kbd>B</kbd></button>
-        <button class="pkey" data-idx="5"><span class="note-lbl">C6</span><kbd>N</kbd></button>
-        <button class="pkey" data-idx="6"><span class="note-lbl">D6</span><kbd>M</kbd></button>
-        <button class="pkey" data-idx="7"><span class="note-lbl">E6</span><kbd>,</kbd></button>
-        <button class="pkey" data-idx="8"><span class="note-lbl">G6</span><kbd>.</kbd></button>
+        <button type="button" class="pkey" data-idx="0"><span class="note-lbl">C5</span><kbd>Z</kbd></button>
+        <button type="button" class="pkey" data-idx="1"><span class="note-lbl">D5</span><kbd>X</kbd></button>
+        <button type="button" class="pkey" data-idx="2"><span class="note-lbl">E5</span><kbd>C</kbd></button>
+        <button type="button" class="pkey" data-idx="3"><span class="note-lbl">G5</span><kbd>V</kbd></button>
+        <button type="button" class="pkey" data-idx="4"><span class="note-lbl">A5</span><kbd>B</kbd></button>
+        <button type="button" class="pkey" data-idx="5"><span class="note-lbl">C6</span><kbd>N</kbd></button>
+        <button type="button" class="pkey" data-idx="6"><span class="note-lbl">D6</span><kbd>M</kbd></button>
+        <button type="button" class="pkey" data-idx="7"><span class="note-lbl">E6</span><kbd>,</kbd></button>
+        <button type="button" class="pkey" data-idx="8"><span class="note-lbl">G6</span><kbd>.</kbd></button>
       </div>
     </div>
   </div>
