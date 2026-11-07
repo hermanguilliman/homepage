@@ -1,302 +1,363 @@
 (() => {
-  "use strict";
+    "use strict";
 
-  // Year & Time
-  const yearEl = document.getElementById("year");
-  if (yearEl) yearEl.textContent = String(new Date().getFullYear());
+    // Year & Time
+    const yearEl = document.getElementById("year");
+    if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
-  const timeDisplay = document.getElementById("timeDisplay");
-  function updateTime() {
-    if (!timeDisplay) return;
-    const now = new Date();
-    const options = { weekday: 'long', day: 'numeric', month: 'long' };
-    const dateStr = now.toLocaleDateString('ru-RU', options);
-    const formatted = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
-    timeDisplay.textContent = formatted;
-  }
-  updateTime();
-  setInterval(updateTime, 60000);
-
-  // Spotlight follower
-  const spotlight = document.getElementById("spotlight");
-  let mouseX = window.innerWidth / 2;
-  let mouseY = window.innerHeight / 2;
-  let currentX = mouseX;
-  let currentY = mouseY;
-
-  window.addEventListener("mousemove", (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    if (spotlight) {
-      spotlight.style.opacity = "1";
+    const timeDisplay = document.getElementById("timeDisplay");
+    function updateTime() {
+        if (!timeDisplay) return;
+        const now = new Date();
+        const options = { weekday: "long", day: "numeric", month: "long" };
+        const dateStr = now.toLocaleDateString("ru-RU", options);
+        const formatted = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+        timeDisplay.textContent = formatted;
     }
-  });
+    updateTime();
+    setInterval(updateTime, 60000);
 
-  window.addEventListener("mouseleave", () => {
-    if (spotlight) spotlight.style.opacity = "0";
-  });
+    // Spotlight follower
+    const spotlight = document.getElementById("spotlight");
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let currentX = mouseX;
+    let currentY = mouseY;
 
-  function renderSpotlight() {
-    currentX += (mouseX - currentX) * 0.1;
-    currentY += (mouseY - currentY) * 0.1;
-    if (spotlight) {
-      spotlight.style.left = `${currentX}px`;
-      spotlight.style.top = `${currentY}px`;
+    window.addEventListener("mousemove", (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        if (spotlight) {
+            spotlight.style.opacity = "1";
+        }
+    });
+
+    window.addEventListener("mouseleave", () => {
+        if (spotlight) spotlight.style.opacity = "0";
+    });
+
+    function renderSpotlight() {
+        currentX += (mouseX - currentX) * 0.1;
+        currentY += (mouseY - currentY) * 0.1;
+        if (spotlight) {
+            spotlight.style.left = `${currentX}px`;
+            spotlight.style.top = `${currentY}px`;
+        }
+        requestAnimationFrame(renderSpotlight);
     }
     requestAnimationFrame(renderSpotlight);
-  }
-  requestAnimationFrame(renderSpotlight);
 
-  // Web Audio API Sound Generator (Harmonic Pentatonic Scale)
-  let audioCtx = null;
-  function playCardSound(pitchIndex) {
-    try {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (audioCtx.state === "suspended") {
-        audioCtx.resume();
-      }
+    // Web Audio API Sound Generator (Harmonic Pentatonic Scale)
+    let audioCtx = null;
+    function playCardSound(pitchIndex) {
+        try {
+            if (!audioCtx) {
+                audioCtx = new (
+                    window.AudioContext || window.webkitAudioContext
+                )();
+            }
+            if (audioCtx.state === "suspended") {
+                audioCtx.resume();
+            }
 
-      const frequencies = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50, 1174.66, 1318.51, 1567.98];
-      const freq = frequencies[pitchIndex % frequencies.length];
+            const frequencies = [
+                523.25, 587.33, 659.25, 783.99, 880.0, 1046.5, 1174.66, 1318.51,
+                1567.98,
+            ];
+            const freq = frequencies[pitchIndex % frequencies.length];
 
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
 
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
 
-      gain.gain.setValueAtTime(0.035, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.16);
+            gain.gain.setValueAtTime(0.035, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(
+                0.0001,
+                audioCtx.currentTime + 0.16,
+            );
 
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
 
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.16);
-    } catch (_) {}
-  }
-
-  // 3D Card Tilt Effect
-  const cards = Array.from(document.querySelectorAll(".tilt-card"));
-  cards.forEach((card) => {
-    card.addEventListener("mousemove", (e) => {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const xc = rect.width / 2;
-      const yc = rect.height / 2;
-      const dx = (x - xc) / xc;
-      const dy = (y - yc) / yc;
-
-      card.style.transform = `perspective(1000px) rotateY(${dx * 6}deg) rotateX(${-dy * 6}deg) translateY(-3px)`;
-    });
-
-    card.addEventListener("mouseleave", () => {
-      card.style.transform = "perspective(1000px) rotateY(0deg) rotateX(0deg) translateY(0px)";
-      card.style.transition = "transform 400ms cubic-bezier(0.16, 1, 0.3, 1)";
-    });
-
-    card.addEventListener("mouseenter", () => {
-      card.style.transition = "none";
-    });
-  });
-
-  // Canvas Particle / Node Network Background
-  const canvas = document.getElementById("bgCanvas");
-  if (canvas) {
-    const ctx = canvas.getContext("2d");
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
-
-    window.addEventListener("resize", () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    });
-
-    const particles = [];
-    const count = Math.min(Math.floor((width * height) / 18000), 60);
-
-    for (let i = 0; i < count; i++) {
-      particles.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
-        radius: Math.random() * 1.5 + 0.5
-      });
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.16);
+        } catch (_) {}
     }
 
-    function draw() {
-      ctx.clearRect(0, 0, width, height);
+    // Toast & Copy to Clipboard
+    const toast = document.getElementById("toast");
+    let toastTimer = null;
 
-      ctx.fillStyle = "rgba(182, 154, 255, 0.25)";
-      ctx.strokeStyle = "rgba(182, 154, 255, 0.04)";
-      ctx.lineWidth = 1;
-
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-
-        if (p.x < 0) p.x = width;
-        if (p.x > width) p.x = 0;
-        if (p.y < 0) p.y = height;
-        if (p.y > height) p.y = 0;
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fill();
-
-        for (let j = i + 1; j < particles.length; j++) {
-          const p2 = particles[j];
-          const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
-          if (dist < 120) {
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.stroke();
-          }
+    function showToast(message) {
+        if (!toast) return;
+        const span = toast.querySelector("span");
+        if (span && message) {
+            span.textContent = message;
         }
-      }
-
-      requestAnimationFrame(draw);
-    }
-    draw();
-  }
-
-  // 2D Grid Keyboard Navigation & Shortcuts (with Sound)
-  let currentFocusIndex = -1;
-
-  function getColumnsCount() {
-    const w = window.innerWidth;
-    if (w > 860) return 3;
-    if (w > 560) return 2;
-    return 1;
-  }
-
-  function focusCard(index) {
-    if (!cards.length) return;
-    currentFocusIndex = (index + cards.length) % cards.length;
-    cards[currentFocusIndex].focus();
-    playCardSound(currentFocusIndex);
-  }
-
-  cards.forEach((card, idx) => {
-    card.addEventListener("focus", () => {
-      currentFocusIndex = idx;
-    });
-  });
-
-  const BY_NUMBER = [
-    "https://blog.guilliman.ru",
-    "https://radio.guilliman.ru",
-    "https://input.guilliman.ru",
-    "https://tartan.guilliman.ru",
-    "https://walgen.guilliman.ru",
-    "https://stl.guilliman.ru",
-    "https://password.guilliman.ru",
-    "https://keytag.guilliman.ru",
-    "https://md.guilliman.ru"
-  ];
-
-  document.addEventListener("keydown", (e) => {
-    if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
-    const key = e.key;
-
-    if (/^[1-9]$/.test(key)) {
-      const idx = Number(key) - 1;
-      const url = BY_NUMBER[idx];
-      if (url) {
-        e.preventDefault();
-        window.open(url, "_blank", "noopener,noreferrer");
-      }
-      return;
+        toast.classList.add("show");
+        window.clearTimeout(toastTimer);
+        toastTimer = window.setTimeout(() => {
+            toast.classList.remove("show");
+        }, 2200);
     }
 
-    const cols = getColumnsCount();
-    if (key === "ArrowRight") {
-      e.preventDefault();
-      focusCard(currentFocusIndex < 0 ? 0 : currentFocusIndex + 1);
-    } else if (key === "ArrowLeft") {
-      e.preventDefault();
-      focusCard(currentFocusIndex < 0 ? 0 : currentFocusIndex - 1);
-    } else if (key === "ArrowDown") {
-      e.preventDefault();
-      focusCard(currentFocusIndex < 0 ? 0 : currentFocusIndex + cols);
-    } else if (key === "ArrowUp") {
-      e.preventDefault();
-      focusCard(currentFocusIndex < 0 ? 0 : currentFocusIndex - cols);
+    function copyCardUrl(card, idx = 0) {
+        if (!card) return;
+        const host = card.dataset.host;
+        const url = host ? `https://${host}` : card.href;
+        if (!url || !navigator.clipboard) return;
+
+        navigator.clipboard
+            .writeText(url)
+            .then(() => {
+                playCardSound(idx);
+                showToast(`✓ Скопировано: ${host || url}`);
+            })
+            .catch(() => {});
     }
-  });
 
-  // Easter Egg Piano Logic
-  const copyrightTrigger = document.getElementById("copyrightTrigger");
-  const pianoDrawer = document.getElementById("pianoDrawer");
-  const pianoClose = document.getElementById("pianoClose");
-  const pianoKeys = document.querySelectorAll(".pkey");
+    // 3D Card Tilt Effect & Copy Button Handlers
+    const cards = Array.from(document.querySelectorAll(".tilt-card"));
+    cards.forEach((card, idx) => {
+        card.addEventListener("mousemove", (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const xc = rect.width / 2;
+            const yc = rect.height / 2;
+            const dx = (x - xc) / xc;
+            const dy = (y - yc) / yc;
 
-  let clickCount = 0;
-  let clickTimer = null;
+            card.style.transform = `perspective(1000px) rotateY(${dx * 6}deg) rotateX(${-dy * 6}deg) translateY(-3px)`;
+        });
 
-  if (copyrightTrigger && pianoDrawer) {
-    copyrightTrigger.addEventListener("click", () => {
-      clickCount++;
-      window.clearTimeout(clickTimer);
-      if (clickCount >= 3) {
-        pianoDrawer.hidden = false;
-        clickCount = 0;
-      } else {
-        clickTimer = window.setTimeout(() => {
-          clickCount = 0;
-        }, 500);
-      }
-    });
-  }
+        card.addEventListener("mouseleave", () => {
+            card.style.transform =
+                "perspective(1000px) rotateY(0deg) rotateX(0deg) translateY(0px)";
+            card.style.transition =
+                "transform 400ms cubic-bezier(0.16, 1, 0.3, 1)";
+        });
 
-  if (pianoClose && pianoDrawer) {
-    pianoClose.addEventListener("click", () => {
-      pianoDrawer.hidden = true;
-    });
-  }
+        card.addEventListener("mouseenter", () => {
+            card.style.transition = "none";
+        });
 
-  const PIANO_CODES = {
-    KeyZ: 0,
-    KeyX: 1,
-    KeyC: 2,
-    KeyV: 3,
-    KeyB: 4,
-    KeyN: 5,
-    KeyM: 6,
-    Comma: 7,
-    Period: 8
-  };
-
-  pianoKeys.forEach((btn) => {
-    const idx = Number(btn.dataset.idx);
-    btn.addEventListener("click", () => {
-      playCardSound(idx);
-      btn.classList.add("active");
-      setTimeout(() => btn.classList.remove("active"), 150);
-    });
-  });
-
-  document.addEventListener("keydown", (e) => {
-    if (pianoDrawer && !pianoDrawer.hidden) {
-      const idx = PIANO_CODES[e.code];
-      if (typeof idx === "number") {
-        e.preventDefault();
-        playCardSound(idx);
-        const btn = document.querySelector(`.pkey[data-idx="${idx}"]`);
-        if (btn) {
-          btn.classList.add("active");
-          setTimeout(() => btn.classList.remove("active"), 150);
+        const copyBtn = card.querySelector(".copy-btn");
+        if (copyBtn) {
+            copyBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                copyCardUrl(card, idx);
+            });
         }
-      }
-      if (e.code === "Escape") {
-        pianoDrawer.hidden = true;
-      }
+    });
+
+    // Canvas Particle / Node Network Background
+    const canvas = document.getElementById("bgCanvas");
+    if (canvas) {
+        const ctx = canvas.getContext("2d");
+        let width = (canvas.width = window.innerWidth);
+        let height = (canvas.height = window.innerHeight);
+
+        window.addEventListener("resize", () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        const particles = [];
+        const count = Math.min(Math.floor((width * height) / 18000), 60);
+
+        for (let i = 0; i < count; i++) {
+            particles.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                vx: (Math.random() - 0.5) * 0.4,
+                vy: (Math.random() - 0.5) * 0.4,
+                radius: Math.random() * 1.5 + 0.5,
+            });
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+
+            ctx.fillStyle = "rgba(182, 154, 255, 0.25)";
+            ctx.strokeStyle = "rgba(182, 154, 255, 0.04)";
+            ctx.lineWidth = 1;
+
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+
+                if (p.x < 0) p.x = width;
+                if (p.x > width) p.x = 0;
+                if (p.y < 0) p.y = height;
+                if (p.y > height) p.y = 0;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                for (let j = i + 1; j < particles.length; j++) {
+                    const p2 = particles[j];
+                    const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            requestAnimationFrame(draw);
+        }
+        draw();
     }
-  });
+
+    // Easter Egg Piano Elements
+    const copyrightTrigger = document.getElementById("copyrightTrigger");
+    const pianoDrawer = document.getElementById("pianoDrawer");
+    const pianoClose = document.getElementById("pianoClose");
+    const pianoKeys = document.querySelectorAll(".pkey");
+
+    // 2D Grid Keyboard Navigation & Shortcuts (with Sound)
+    let currentFocusIndex = -1;
+
+    function getColumnsCount() {
+        const w = window.innerWidth;
+        if (w > 860) return 3;
+        if (w > 560) return 2;
+        return 1;
+    }
+
+    function focusCard(index) {
+        if (!cards.length) return;
+        currentFocusIndex = (index + cards.length) % cards.length;
+        cards[currentFocusIndex].focus();
+        playCardSound(currentFocusIndex);
+    }
+
+    cards.forEach((card, idx) => {
+        card.addEventListener("focus", () => {
+            currentFocusIndex = idx;
+        });
+    });
+
+    const BY_NUMBER = [
+        "https://blog.guilliman.ru",
+        "https://radio.guilliman.ru",
+        "https://input.guilliman.ru",
+        "https://tartan.guilliman.ru",
+        "https://walgen.guilliman.ru",
+        "https://stl.guilliman.ru",
+        "https://password.guilliman.ru",
+        "https://keytag.guilliman.ru",
+        "https://md.guilliman.ru",
+    ];
+
+    document.addEventListener("keydown", (e) => {
+        if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
+
+        const isPianoOpen = pianoDrawer && !pianoDrawer.hidden;
+        const key = e.key;
+
+        if (/^[1-9]$/.test(key)) {
+            const idx = Number(key) - 1;
+            const url = BY_NUMBER[idx];
+            if (url) {
+                e.preventDefault();
+                window.open(url, "_blank", "noopener,noreferrer");
+            }
+            return;
+        }
+
+        // Copy focused card URL with 'C' (when piano is closed)
+        if (!isPianoOpen && e.code === "KeyC" && currentFocusIndex >= 0) {
+            e.preventDefault();
+            copyCardUrl(cards[currentFocusIndex], currentFocusIndex);
+            return;
+        }
+
+        const cols = getColumnsCount();
+        if (key === "ArrowRight") {
+            e.preventDefault();
+            focusCard(currentFocusIndex < 0 ? 0 : currentFocusIndex + 1);
+        } else if (key === "ArrowLeft") {
+            e.preventDefault();
+            focusCard(currentFocusIndex < 0 ? 0 : currentFocusIndex - 1);
+        } else if (key === "ArrowDown") {
+            e.preventDefault();
+            focusCard(currentFocusIndex < 0 ? 0 : currentFocusIndex + cols);
+        } else if (key === "ArrowUp") {
+            e.preventDefault();
+            focusCard(currentFocusIndex < 0 ? 0 : currentFocusIndex - cols);
+        }
+    });
+
+    // Easter Egg Piano Logic
+    let clickCount = 0;
+    let clickTimer = null;
+
+    if (copyrightTrigger && pianoDrawer) {
+        copyrightTrigger.addEventListener("click", () => {
+            clickCount++;
+            window.clearTimeout(clickTimer);
+            if (clickCount >= 3) {
+                pianoDrawer.hidden = false;
+                clickCount = 0;
+            } else {
+                clickTimer = window.setTimeout(() => {
+                    clickCount = 0;
+                }, 500);
+            }
+        });
+    }
+
+    if (pianoClose && pianoDrawer) {
+        pianoClose.addEventListener("click", () => {
+            pianoDrawer.hidden = true;
+        });
+    }
+
+    const PIANO_CODES = {
+        KeyZ: 0,
+        KeyX: 1,
+        KeyC: 2,
+        KeyV: 3,
+        KeyB: 4,
+        KeyN: 5,
+        KeyM: 6,
+        Comma: 7,
+        Period: 8,
+    };
+
+    pianoKeys.forEach((btn) => {
+        const idx = Number(btn.dataset.idx);
+        btn.addEventListener("click", () => {
+            playCardSound(idx);
+            btn.classList.add("active");
+            setTimeout(() => btn.classList.remove("active"), 150);
+        });
+    });
+
+    document.addEventListener("keydown", (e) => {
+        if (pianoDrawer && !pianoDrawer.hidden) {
+            const idx = PIANO_CODES[e.code];
+            if (typeof idx === "number") {
+                e.preventDefault();
+                playCardSound(idx);
+                const btn = document.querySelector(`.pkey[data-idx="${idx}"]`);
+                if (btn) {
+                    btn.classList.add("active");
+                    setTimeout(() => btn.classList.remove("active"), 150);
+                }
+            }
+            if (e.code === "Escape") {
+                pianoDrawer.hidden = true;
+            }
+        }
+    });
 })();

@@ -1,2 +1,5 @@
 User-agent: *
 Allow: /
+
+Host: https://guilliman.ru
+Sitemap: https://guilliman.ru/sitemap.xml
