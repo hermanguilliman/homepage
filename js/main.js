@@ -9,28 +9,33 @@
     function updateTime() {
         if (!timeDisplay) return;
         const now = new Date();
-        const options = { weekday: "long", day: "numeric", month: "long" };
-        const dateStr = now.toLocaleDateString("ru-RU", options);
+        const options = { weekday: "short", day: "numeric", month: "short" };
+        const dateStr = now
+            .toLocaleDateString("ru-RU", options)
+            .replace(/\./g, "");
         const formatted = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
         timeDisplay.textContent = formatted;
     }
     updateTime();
     setInterval(updateTime, 60000);
 
-    // Spotlight follower
+    // Spotlight follower & interactive cursor position
     const spotlight = document.getElementById("spotlight");
     let mouseX = window.innerWidth / 2;
     let mouseY = window.innerHeight / 2;
     let currentX = mouseX;
     let currentY = mouseY;
+    let isMouseActive = false;
 
     window.addEventListener("mousemove", (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
+        isMouseActive = true;
         if (spotlight) spotlight.style.opacity = "1";
     });
 
     window.addEventListener("mouseleave", () => {
+        isMouseActive = false;
         if (spotlight) spotlight.style.opacity = "0";
     });
 
@@ -110,8 +115,8 @@
     let octaveShift = 0; // -1, 0, +1
     let delayEnabled = true;
 
-    const activeVoices = new Map(); // voiceKey -> { stop() }
-    const bgRipples = []; // Visual ripples on background canvas
+    const activeVoices = new Map();
+    const bgRipples = [];
 
     function initAudioEngine() {
         if (audioCtx) {
@@ -124,16 +129,13 @@
         masterGain = audioCtx.createGain();
         masterGain.gain.value = 0.3;
 
-        // Dynamics compressor to prevent clipping on chords
         const compressor = audioCtx.createDynamicsCompressor();
         compressor.threshold.value = -14;
         compressor.ratio.value = 4;
 
-        // Analyser for mini oscilloscope
         analyser = audioCtx.createAnalyser();
         analyser.fftSize = 256;
 
-        // Stereo Ping-Pong / Space Delay FX
         delaySend = audioCtx.createGain();
         delaySend.gain.value = delayEnabled ? 0.32 : 0;
 
@@ -147,7 +149,6 @@
         delayFilter.type = "lowpass";
         delayFilter.frequency.value = 1800;
 
-        // Routing
         masterGain.connect(compressor);
         masterGain.connect(delaySend);
 
@@ -180,7 +181,6 @@
 
     function triggerVisualFeedback(pitchIndex) {
         const idx = pitchIndex % 9;
-        // Pulse corresponding project card
         const card = cards[idx];
         if (card) {
             card.classList.add("synth-pulse");
@@ -267,7 +267,6 @@
                 },
             });
 
-            // Highlight piano key UI
             const btn = document.querySelector(
                 `.pkey[data-idx="${pitchIndex}"]`,
             );
@@ -275,7 +274,6 @@
 
             triggerVisualFeedback(pitchIndex);
 
-            // Record event if looper is recording
             if (looperState === "recording" && !fromLooper) {
                 recordedEvents.push({
                     type: "on",
@@ -308,7 +306,6 @@
         }
     }
 
-    // Short one-shot sound for card keyboard navigation & copy action
     function playCardSound(pitchIndex) {
         const id = `oneshot-${pitchIndex}-${performance.now()}`;
         startNote(pitchIndex, id, true);
@@ -353,7 +350,7 @@
     }
 
     // ============================================================================
-    // TOAST & COPY TO CLIPBOARD
+    // TOAST, 3D CARD TILT & SPECULAR INNER GLOW
     // ============================================================================
     const toast = document.getElementById("toast");
     let toastTimer = null;
@@ -384,7 +381,6 @@
             .catch(() => {});
     }
 
-    // 3D Card Tilt Effect & Copy Button Handlers
     const cards = Array.from(document.querySelectorAll(".tilt-card"));
     cards.forEach((card, idx) => {
         card.addEventListener("mousemove", (e) => {
@@ -396,7 +392,9 @@
             const dx = (x - xc) / xc;
             const dy = (y - yc) / yc;
 
-            card.style.transform = `perspective(1000px) rotateY(${dx * 6}deg) rotateX(${-dy * 6}deg) translateY(-3px)`;
+            card.style.setProperty("--mouse-x", `${x}px`);
+            card.style.setProperty("--mouse-y", `${y}px`);
+            card.style.transform = `perspective(1000px) rotateY(${dx * 5.5}deg) rotateX(${-dy * 5.5}deg) translateY(-3px)`;
         });
 
         card.addEventListener("mouseleave", () => {
@@ -421,7 +419,7 @@
     });
 
     // ============================================================================
-    // CANVAS PARTICLE NETWORK + SOUND RIPPLES
+    // INTERACTIVE CANVAS PARTICLE NETWORK + SOUND RIPPLES
     // ============================================================================
     const canvas = document.getElementById("bgCanvas");
     if (canvas) {
@@ -435,15 +433,15 @@
         });
 
         const particles = [];
-        const count = Math.min(Math.floor((width * height) / 18000), 60);
+        const count = Math.min(Math.floor((width * height) / 17000), 65);
 
         for (let i = 0; i < count; i++) {
             particles.push({
                 x: Math.random() * width,
                 y: Math.random() * height,
-                vx: (Math.random() - 0.5) * 0.4,
-                vy: (Math.random() - 0.5) * 0.4,
-                radius: Math.random() * 1.5 + 0.5,
+                vx: (Math.random() - 0.5) * 0.38,
+                vy: (Math.random() - 0.5) * 0.38,
+                radius: Math.random() * 1.4 + 0.5,
             });
         }
 
@@ -468,8 +466,7 @@
                 if (rip.alpha < 0.02) bgRipples.splice(r, 1);
             }
 
-            ctx.fillStyle = "rgba(182, 154, 255, 0.25)";
-            ctx.strokeStyle = "rgba(182, 154, 255, 0.04)";
+            ctx.fillStyle = "rgba(182, 154, 255, 0.26)";
             ctx.lineWidth = 1;
 
             for (let i = 0; i < particles.length; i++) {
@@ -486,13 +483,29 @@
                 ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
                 ctx.fill();
 
+                // Connect particles to each other
                 for (let j = i + 1; j < particles.length; j++) {
                     const p2 = particles[j];
                     const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
                     if (dist < 120) {
+                        const alpha = (1 - dist / 120) * 0.055;
+                        ctx.strokeStyle = `rgba(182, 154, 255, ${alpha})`;
                         ctx.beginPath();
                         ctx.moveTo(p.x, p.y);
                         ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                }
+
+                // Connect particles softly to user cursor
+                if (isMouseActive) {
+                    const mDist = Math.hypot(p.x - currentX, p.y - currentY);
+                    if (mDist < 160) {
+                        const mAlpha = (1 - mDist / 160) * 0.14;
+                        ctx.strokeStyle = `rgba(182, 154, 255, ${mAlpha})`;
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(currentX, currentY);
                         ctx.stroke();
                     }
                 }
@@ -558,7 +571,6 @@
     }
     if (synthDelayBtn) synthDelayBtn.addEventListener("click", toggleDelay);
 
-    // Looper State Machine: "idle" -> "recording" -> "playing" -> "idle"
     let looperState = "idle";
     let recordedEvents = [];
     let recordStartTime = 0;
@@ -573,7 +585,6 @@
             clearInterval(loopInterval);
             loopInterval = null;
         }
-        // Stop any lingering looper voices
         for (const [key] of activeVoices) {
             if (key.startsWith("loop-"))
                 stopNote(activeVoices.get(key).pitchIndex, key, true);
@@ -630,7 +641,6 @@
         });
     }
 
-    // Pointer Glissando (slide across keys with mouse or finger)
     let isPointerDown = false;
     let currentPointerIdx = null;
 
@@ -665,7 +675,6 @@
         }
     });
 
-    // Easter Egg Open / Close
     let clickCount = 0;
     let clickTimer = null;
 
@@ -756,7 +765,6 @@
 
         const isPianoOpen = pianoDrawer && !pianoDrawer.hidden;
 
-        // Piano Keyboard Controls (when drawer is open)
         if (isPianoOpen) {
             if (e.code === "Escape") {
                 e.preventDefault();
@@ -795,7 +803,6 @@
             return;
         }
 
-        // Copy focused card URL with 'C' (when piano is closed)
         if (!isPianoOpen && e.code === "KeyC" && currentFocusIndex >= 0) {
             e.preventDefault();
             copyCardUrl(cards[currentFocusIndex], currentFocusIndex);

@@ -30,7 +30,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Onest:wght@500;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Onest:wght@500;600;700&display=swap"
     rel="stylesheet">
 
   <link rel="stylesheet" href="css/style.css">
@@ -86,20 +86,27 @@
   <!-- Interactive Canvas Background -->
   <canvas id="bgCanvas" aria-hidden="true"></canvas>
 
-  <!-- Spotlight lighting following cursor -->
+  <!-- Ambient Top Glow + Cursor Spotlight -->
+  <div class="ambient-glow" aria-hidden="true"></div>
   <div id="spotlight" aria-hidden="true"></div>
 
   <div class="shell">
     <header class="masthead">
-      <div class="brand-box">
-        <span class="eq-bars" aria-hidden="true" title="Системы активны">
-          <span></span>
-          <span></span>
-          <span></span>
-        </span>
-        <h1 class="brand-title">guilliman's lab</h1>
+      <div class="brand-group">
+        <div class="brand-box">
+          <span class="eq-bars" aria-hidden="true" title="Системы активны">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+          <h1 class="brand-title">guilliman's lab</h1>
+          <span class="lab-badge">v2.4</span>
+        </div>
+        <p class="brand-sub">Коллекция быстрых браузерных микро-инструментов и генераторов без рекламы и регистрации</p>
       </div>
+
       <div class="meta-box">
+        <span class="status-led" aria-hidden="true"></span>
         <span class="time-display" id="timeDisplay">00:00</span>
         <span class="sep">·</span>
         <span class="hub-tag">9 сервисов</span>
@@ -113,11 +120,30 @@
         <div class="card-glass"></div>
         <div class="card-inner">
           <div class="card-top">
-            <span class="card-num">01</span>
+            <div class="card-badge">
+              <span class="card-icon" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+                  <path d="M8 7h6" />
+                  <path d="M8 11h8" />
+                </svg>
+              </span>
+              <span class="card-num">01 · Заметки</span>
+            </div>
+            <button type="button" class="copy-btn" title="Скопировать ссылку"
+              aria-label="Скопировать ссылку blog.guilliman.ru">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
           </div>
           <div class="card-body">
-            <h2 class="card-host">blog<span class="tld">.guilliman.ru</span></h2>
-            <p class="card-desc">Блог об IT, разработке, заметки и статьи</p>
+            <h2 class="card-host">blog<span class="tld">.guilliman.ru</span><span class="card-arrow"
+                aria-hidden="true">↗</span></h2>
+            <p class="card-desc">Блог об IT, разработке, архитектуре и личные технические заметки</p>
           </div>
         </div>
       </a>
@@ -128,11 +154,32 @@
         <div class="card-glass"></div>
         <div class="card-inner">
           <div class="card-top">
-            <span class="card-num">02</span>
+            <div class="card-badge">
+              <span class="card-icon" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9" />
+                  <path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5" />
+                  <circle cx="12" cy="12" r="2" />
+                  <path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5" />
+                  <path d="M19.1 4.9C23 8.8 23 15.1 19.1 19" />
+                </svg>
+              </span>
+              <span class="card-num">02 · Аудио</span>
+            </div>
+            <button type="button" class="copy-btn" title="Скопировать ссылку"
+              aria-label="Скопировать ссылку radio.guilliman.ru">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
           </div>
           <div class="card-body">
-            <h2 class="card-host">radio<span class="tld">.guilliman.ru</span></h2>
-            <p class="card-desc">Онлайн-радио и генератор плейлистов SomaFM и мира (M3U8)</p>
+            <h2 class="card-host">radio<span class="tld">.guilliman.ru</span><span class="card-arrow"
+                aria-hidden="true">↗</span></h2>
+            <p class="card-desc">Онлайн-радио и генератор плейлистов SomaFM и радиостанций мира (M3U8)</p>
           </div>
         </div>
       </a>
@@ -143,11 +190,36 @@
         <div class="card-glass"></div>
         <div class="card-inner">
           <div class="card-top">
-            <span class="card-num">03</span>
+            <div class="card-badge">
+              <span class="card-icon" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="20" height="16" x="2" y="4" rx="2" />
+                  <path d="M6 8h.001" />
+                  <path d="M10 8h.001" />
+                  <path d="M14 8h.001" />
+                  <path d="M18 8h.001" />
+                  <path d="M8 12h.001" />
+                  <path d="M12 12h.001" />
+                  <path d="M16 12h.001" />
+                  <path d="M7 16h10" />
+                </svg>
+              </span>
+              <span class="card-num">03 · Железо</span>
+            </div>
+            <button type="button" class="copy-btn" title="Скопировать ссылку"
+              aria-label="Скопировать ссылку input.guilliman.ru">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
           </div>
           <div class="card-body">
-            <h2 class="card-host">input<span class="tld">.guilliman.ru</span></h2>
-            <p class="card-desc">Онлайн-тест и диагностика клавиатуры, мыши и периферии</p>
+            <h2 class="card-host">input<span class="tld">.guilliman.ru</span><span class="card-arrow"
+                aria-hidden="true">↗</span></h2>
+            <p class="card-desc">Онлайн-тест и диагностика клавиатуры, мыши, скролла и геймпадов</p>
           </div>
         </div>
       </a>
@@ -158,11 +230,32 @@
         <div class="card-glass"></div>
         <div class="card-inner">
           <div class="card-top">
-            <span class="card-num">04</span>
+            <div class="card-badge">
+              <span class="card-icon" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="18" height="18" x="3" y="3" rx="2" />
+                  <path d="M3 9h18" />
+                  <path d="M3 15h18" />
+                  <path d="M9 3v18" />
+                  <path d="M15 3v18" />
+                </svg>
+              </span>
+              <span class="card-num">04 · Паттерны</span>
+            </div>
+            <button type="button" class="copy-btn" title="Скопировать ссылку"
+              aria-label="Скопировать ссылку tartan.guilliman.ru">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
           </div>
           <div class="card-body">
-            <h2 class="card-host">tartan<span class="tld">.guilliman.ru</span></h2>
-            <p class="card-desc">Генератор бесшовных шотландских клетчатых узоров (тартан)</p>
+            <h2 class="card-host">tartan<span class="tld">.guilliman.ru</span><span class="card-arrow"
+                aria-hidden="true">↗</span></h2>
+            <p class="card-desc">Генератор бесшовных шотландских клетчатых узоров и текстур (тартан)</p>
           </div>
         </div>
       </a>
@@ -173,11 +266,29 @@
         <div class="card-glass"></div>
         <div class="card-inner">
           <div class="card-top">
-            <span class="card-num">05</span>
+            <div class="card-badge">
+              <span class="card-icon" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path
+                    d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                </svg>
+              </span>
+              <span class="card-num">05 · Графика</span>
+            </div>
+            <button type="button" class="copy-btn" title="Скопировать ссылку"
+              aria-label="Скопировать ссылку walgen.guilliman.ru">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
           </div>
           <div class="card-body">
-            <h2 class="card-host">walgen<span class="tld">.guilliman.ru</span></h2>
-            <p class="card-desc">Генератор абстрактных обоев и фонов по формулам</p>
+            <h2 class="card-host">walgen<span class="tld">.guilliman.ru</span><span class="card-arrow"
+                aria-hidden="true">↗</span></h2>
+            <p class="card-desc">Алгоритмический генератор абстрактных обоев и фонов по формулам</p>
           </div>
         </div>
       </a>
@@ -188,11 +299,31 @@
         <div class="card-glass"></div>
         <div class="card-inner">
           <div class="card-top">
-            <span class="card-num">06</span>
+            <div class="card-badge">
+              <span class="card-icon" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path
+                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                  <polyline points="3.29 7 12 12 20.71 7" />
+                  <line x1="12" x2="12" y1="22" y2="12" />
+                </svg>
+              </span>
+              <span class="card-num">06 · 3D & CAD</span>
+            </div>
+            <button type="button" class="copy-btn" title="Скопировать ссылку"
+              aria-label="Скопировать ссылку stl.guilliman.ru">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
           </div>
           <div class="card-body">
-            <h2 class="card-host">stl<span class="tld">.guilliman.ru</span></h2>
-            <p class="card-desc">Онлайн 3D-просмотрщик STL-моделей для 3D-печати</p>
+            <h2 class="card-host">stl<span class="tld">.guilliman.ru</span><span class="card-arrow"
+                aria-hidden="true">↗</span></h2>
+            <p class="card-desc">Онлайн 3D-просмотрщик и анализ STL-моделей для 3D-печати</p>
           </div>
         </div>
       </a>
@@ -203,11 +334,29 @@
         <div class="card-glass"></div>
         <div class="card-inner">
           <div class="card-top">
-            <span class="card-num">07</span>
+            <div class="card-badge">
+              <span class="card-icon" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+                  <path d="m9 12 2 2 4-4" />
+                </svg>
+              </span>
+              <span class="card-num">07 · Защита</span>
+            </div>
+            <button type="button" class="copy-btn" title="Скопировать ссылку"
+              aria-label="Скопировать ссылку password.guilliman.ru">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
           </div>
           <div class="card-body">
-            <h2 class="card-host">password<span class="tld">.guilliman.ru</span></h2>
-            <p class="card-desc">Генератор надежных криптостойких паролей в браузере</p>
+            <h2 class="card-host">password<span class="tld">.guilliman.ru</span><span class="card-arrow"
+                aria-hidden="true">↗</span></h2>
+            <p class="card-desc">Генератор надежных криптостойких паролей и фраз локально в браузере</p>
           </div>
         </div>
       </a>
@@ -218,11 +367,30 @@
         <div class="card-glass"></div>
         <div class="card-inner">
           <div class="card-top">
-            <span class="card-num">08</span>
+            <div class="card-badge">
+              <span class="card-icon" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path
+                    d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" />
+                  <circle cx="7.5" cy="7.5" r=".5" fill="currentColor" />
+                </svg>
+              </span>
+              <span class="card-num">08 · Печать</span>
+            </div>
+            <button type="button" class="copy-btn" title="Скопировать ссылку"
+              aria-label="Скопировать ссылку keytag.guilliman.ru">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
           </div>
           <div class="card-body">
-            <h2 class="card-host">keytag<span class="tld">.guilliman.ru</span></h2>
-            <p class="card-desc">Конструктор и печать сетки вкладышей-бирок для ключей</p>
+            <h2 class="card-host">keytag<span class="tld">.guilliman.ru</span><span class="card-arrow"
+                aria-hidden="true">↗</span></h2>
+            <p class="card-desc">Конструктор и подготовка к печати сетки вкладышей-бирок для ключей</p>
           </div>
         </div>
       </a>
@@ -233,11 +401,29 @@
         <div class="card-glass"></div>
         <div class="card-inner">
           <div class="card-top">
-            <span class="card-num">09</span>
+            <div class="card-badge">
+              <span class="card-icon" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="16 18 22 12 16 6" />
+                  <polyline points="8 6 2 12 8 18" />
+                </svg>
+              </span>
+              <span class="card-num">09 · Код и текст</span>
+            </div>
+            <button type="button" class="copy-btn" title="Скопировать ссылку"
+              aria-label="Скопировать ссылку md.guilliman.ru">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
           </div>
           <div class="card-body">
-            <h2 class="card-host">md<span class="tld">.guilliman.ru</span></h2>
-            <p class="card-desc">Быстрый онлайн-конвертер HTML-разметки в Markdown</p>
+            <h2 class="card-host">md<span class="tld">.guilliman.ru</span><span class="card-arrow"
+                aria-hidden="true">↗</span></h2>
+            <p class="card-desc">Быстрый двусторонний онлайн-конвертер HTML-разметки в чистый Markdown</p>
           </div>
         </div>
       </a>
@@ -255,7 +441,13 @@
     </script>
 
     <footer class="subfoot">
-      <span id="copyrightTrigger" class="copyright-trigger">© <span id="year"></span> Herman Guilliman</span>
+      <span id="copyrightTrigger" class="copyright-trigger" title="Тройной клик — синтезатор">© <span id="year"></span>
+        Herman Guilliman</span>
+      <div class="keys-info" aria-label="Горячие клавиши">
+        <span><kbd>1</kbd>–<kbd>9</kbd> открыть</span>
+        <span><kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd> выбор</span>
+        <span><kbd>C</kbd> копировать</span>
+      </div>
     </footer>
   </div>
 
@@ -272,7 +464,7 @@
         <canvas id="synthScope" class="synth-scope" width="140" height="26" aria-hidden="true"></canvas>
 
         <div class="synth-controls">
-          <button type="button" id="synthWaveBtn" class="synth-btn" title="Тембр синтезатора (Tab)">
+          <button type="button" id="synthWaveBtn" class="synth-btn" title="Тембр синтезатора">
             Wave: <strong id="synthWaveLbl">Crystal</strong>
           </button>
           <button type="button" id="synthOctBtn" class="synth-btn" title="Октава (клавиши [ и ])">
